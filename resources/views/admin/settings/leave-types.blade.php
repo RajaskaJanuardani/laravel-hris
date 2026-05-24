@@ -1,0 +1,4 @@
+@extends('layouts.app', ['heading' => 'Tipe Cuti'])
+@section('content')
+<div class="row g-4"><div class="col-lg-4"><form class="card p-4" method="POST" action="{{ route('admin.settings.leave-types.store') }}">@csrf<h2 class="h5">Tambah Tipe</h2><input class="form-control mb-2" name="name" placeholder="Nama" required><input class="form-control mb-2" name="code" placeholder="Kode" required><input class="form-control mb-2" type="number" name="quota_per_year" value="12"><textarea class="form-control mb-2" name="description" placeholder="Deskripsi"></textarea><button class="btn btn-primary w-100">Simpan</button></form></div><div class="col-lg-8"><div class="card p-4"><table class="table"><thead><tr><th>Nama</th><th>Kode</th><th>Kuota</th></tr></thead><tbody>@foreach($leaveTypes as $type)<tr><td>{{ $type->name }}</td><td>{{ $type->code }}</td><td>{{ $type->quota_per_year }} hari</td></tr>@endforeach</tbody></table></div></div></div>
+@endsection

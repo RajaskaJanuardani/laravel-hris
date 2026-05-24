@@ -1,0 +1,4 @@
+@extends('layouts.app', ['heading' => 'Payroll'])
+@section('content')
+<div class="card p-4"><div class="d-flex justify-content-between mb-3"><h2 class="h5">Slip Gaji</h2><a class="btn btn-primary" href="{{ route('admin.payroll.create') }}">Generate Payroll</a></div><table class="table"><thead><tr><th>Periode</th><th>Karyawan</th><th>Lembur</th><th>Gaji Bersih</th><th>Status</th></tr></thead><tbody>@forelse($payslips as $payslip)<tr><td>{{ $payslip->payrollPeriod->name }}</td><td>{{ $payslip->employee->full_name }}</td><td>{{ number_format($payslip->overtime_hours, 2) }} jam</td><td>Rp {{ number_format($payslip->net_salary,0,',','.') }}</td><td>{{ $payslip->status }}</td></tr>@empty<tr><td colspan="5" class="text-muted">Belum ada payroll.</td></tr>@endforelse</tbody></table>{{ $payslips->links() }}</div>
+@endsection

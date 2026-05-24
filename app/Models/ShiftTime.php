@@ -16,6 +16,7 @@ class ShiftTime extends Model
         'start_time',
         'end_time',
         'working_hours',
+        'late_tolerance_minutes',
         'description',
         'is_active',
     ];

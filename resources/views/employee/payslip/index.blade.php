@@ -1,0 +1,4 @@
+@extends('layouts.app', ['heading' => 'Slip Gaji Saya'])
+@section('content')
+<div class="card p-4"><table class="table"><thead><tr><th>Periode</th><th>Gaji Pokok</th><th>Lembur</th><th>Potongan</th><th>Bersih</th><th></th></tr></thead><tbody>@forelse($payslips as $payslip)<tr><td>{{ $payslip->payrollPeriod->name }}</td><td>Rp {{ number_format($payslip->base_salary,0,',','.') }}</td><td>Rp {{ number_format($payslip->overtime_amount,0,',','.') }}</td><td>Rp {{ number_format($payslip->total_deduction,0,',','.') }}</td><td>Rp {{ number_format($payslip->net_salary,0,',','.') }}</td><td><a class="btn btn-sm btn-outline-primary" href="{{ route('employee.payslip.show',$payslip) }}">Detail</a></td></tr>@empty<tr><td colspan="6" class="text-muted">Belum ada slip gaji.</td></tr>@endforelse</tbody></table>{{ method_exists($payslips,'links') ? $payslips->links() : '' }}</div>
+@endsection

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->integer('working_hours')->default(8);
+            $table->unsignedInteger('late_tolerance_minutes')->default(10);
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

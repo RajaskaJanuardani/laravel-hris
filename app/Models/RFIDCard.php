@@ -10,10 +10,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RFIDCard extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $table = 'rfid_cards';
  
     protected $fillable = [
         'employee_id',
         'uid',
+        'card_label',
         'status',
         'issued_at',
         'expired_at',

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->string('uid')->unique(); // RFID UID dari kartu
+            $table->string('card_label')->nullable();
             $table->enum('status', ['active', 'inactive', 'lost'])->default('active');
             $table->timestamp('issued_at')->useCurrent();
             $table->timestamp('expired_at')->nullable();

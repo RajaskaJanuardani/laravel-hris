@@ -1,0 +1,4 @@
+@extends('layouts.app', ['heading' => 'Detail Slip Gaji'])
+@section('content')
+<div class="card p-4"><h2 class="h5">{{ $payslip->payrollPeriod->name }}</h2><div class="row g-3 mt-2"><div class="col-md-3"><div class="border rounded p-3">Gaji Pokok<br><strong>Rp {{ number_format($payslip->base_salary,0,',','.') }}</strong></div></div><div class="col-md-3"><div class="border rounded p-3">Lembur<br><strong>{{ number_format($payslip->overtime_hours, 2) }} jam</strong><br><span class="text-muted">Rp {{ number_format($payslip->overtime_amount,0,',','.') }}</span></div></div><div class="col-md-3"><div class="border rounded p-3">Potongan<br><strong>Rp {{ number_format($payslip->total_deduction,0,',','.') }}</strong></div></div><div class="col-md-3"><div class="border rounded p-3">Gaji Bersih<br><strong>Rp {{ number_format($payslip->net_salary,0,',','.') }}</strong></div></div></div></div>
+@endsection

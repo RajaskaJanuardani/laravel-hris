@@ -15,6 +15,8 @@ class EmployeeOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
+        abort_unless($request->user()?->isEmployee(), 403);
+
         return $next($request);
     }
 }

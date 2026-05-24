@@ -1,0 +1,7 @@
+@extends('layouts.app', ['heading' => 'Divisi & Jabatan'])
+@section('content')
+<div class="row g-4">
+    <div class="col-lg-6"><form class="card p-4 mb-4" method="POST" action="{{ route('admin.departments.store') }}">@csrf<h2 class="h5">Tambah Divisi</h2><input class="form-control mb-2" name="name" placeholder="Nama divisi" required><input class="form-control mb-2" name="code" placeholder="Kode"><button class="btn btn-primary">Simpan</button></form><div class="card p-4"><h2 class="h5">Daftar Divisi</h2>@foreach($departments as $department)<div class="border-bottom py-2">{{ $department->name }} <span class="text-muted small">{{ $department->code }}</span></div>@endforeach</div></div>
+    <div class="col-lg-6"><form class="card p-4 mb-4" method="POST" action="{{ route('admin.positions.store') }}">@csrf<h2 class="h5">Tambah Jabatan</h2><input class="form-control mb-2" name="name" placeholder="Nama jabatan" required><input class="form-control mb-2" name="code" placeholder="Kode"><input class="form-control mb-2" type="number" name="salary_min" placeholder="Gaji minimal"><input class="form-control mb-2" type="number" name="salary_max" placeholder="Gaji maksimal"><button class="btn btn-primary">Simpan</button></form><div class="card p-4"><h2 class="h5">Daftar Jabatan</h2>@foreach($positions as $position)<div class="border-bottom py-2">{{ $position->name }} <span class="text-muted small">{{ $position->code }}</span></div>@endforeach</div></div>
+</div>
+@endsection

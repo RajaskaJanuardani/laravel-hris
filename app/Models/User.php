@@ -27,24 +27,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Employee::class);
     }
 
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'super_admin';
-    }
-
-    public function isHRAdmin(): bool
-    {
-        return $this->role === 'hr_admin';
-    }
-
     public function isAdmin()
     {
-        return in_array($this->role, ['super_admin', 'hr_admin']);
-    }
-
-    public function isHR()
-    {
-        return $this->role === 'hr_admin';
+        return $this->role === 'admin';
     }
 
     public function isEmployee()

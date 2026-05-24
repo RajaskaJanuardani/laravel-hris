@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('department_id')->constrained()->onDelete('restrict');
             $table->foreignId('position_id')->constrained()->onDelete('restrict');
             $table->foreignId('shift_time_id')->constrained()->onDelete('restrict');
+            $table->enum('job_role', ['staff', 'mandor'])->default('staff');
             
             $table->date('hire_date');
             $table->date('contract_end_date')->nullable();

@@ -1,0 +1,4 @@
+@extends('layouts.app', ['heading' => 'Riwayat Absensi'])
+@section('content')
+<div class="card p-4"><table class="table"><thead><tr><th>Tanggal</th><th>Masuk</th><th>Pulang</th><th>Status</th><th>Telat</th><th>Lembur</th></tr></thead><tbody>@forelse($attendances as $attendance)<tr><td>{{ $attendance->attendance_date->format('d M Y') }}</td><td>{{ $attendance->check_in_time?->format('H:i') ?? '-' }}</td><td>{{ $attendance->check_out_time?->format('H:i') ?? '-' }}</td><td>{{ $attendance->status }}</td><td>{{ $attendance->late_minutes }} menit</td><td>{{ number_format($attendance->overtime_hours, 2) }} jam</td></tr>@empty<tr><td colspan="6" class="text-muted">Belum ada riwayat.</td></tr>@endforelse</tbody></table>{{ method_exists($attendances,'links') ? $attendances->links() : '' }}</div>
+@endsection
