@@ -14,7 +14,7 @@
             <a class="text-decoration-none" href="{{ route($item[1]) }}">
                 <div class="card p-4 h-100">
                     <div class="d-flex align-items-start gap-3">
-                        <div class="rounded-3 bg-light d-inline-flex align-items-center justify-content-center" style="width:44px;height:44px;">
+                        <div class="rounded-3 ta-surface-soft d-inline-flex align-items-center justify-content-center" style="width:44px;height:44px;">
                             <img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/'.$item[3]) }}" alt="">
                         </div>
                         <div class="flex-grow-1">

@@ -44,7 +44,7 @@
             <h2 class="h5">Komposisi Jabatan</h2>
             <div class="row g-3">
                 @forelse($jobRoleStats as $role => $total)
-                    <div class="col-md-3"><div class="border rounded p-3 bg-light"><div class="fw-semibold">{{ ucfirst($role) }}</div><div class="text-muted small">{{ $total }} karyawan</div></div></div>
+                    <div class="col-md-3"><div class="border rounded p-3 ta-surface-soft"><div class="fw-semibold">{{ ucfirst($role) }}</div><div class="text-muted small">{{ $total }} karyawan</div></div></div>
                 @empty
                     <div class="col-12 text-muted">Belum ada data jabatan.</div>
                 @endforelse

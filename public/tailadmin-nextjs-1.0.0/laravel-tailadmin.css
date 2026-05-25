@@ -28,6 +28,303 @@
     --ta-shadow-md: 0 4px 8px -2px rgba(16, 24, 40, .1), 0 2px 4px -2px rgba(16, 24, 40, .06);
 }
 
+.ta-surface-soft {
+    background: var(--ta-gray-50);
+}
+
+/* Dark mode: toggled by adding `dark` class to <html> */
+html.dark {
+    --ta-gray-25: #0b1020;
+    --ta-gray-50: #0f172a;
+    --ta-gray-100: #111c35;
+    --ta-gray-200: #1e2a46;
+    --ta-gray-300: #2c3d63;
+    --ta-gray-400: #8ea1c5;
+    --ta-gray-500: #9fb0cf;
+    --ta-gray-600: #b7c4dc;
+    --ta-gray-700: #c8d4e8;
+    --ta-gray-800: #e7edf8;
+    --ta-gray-900: #f4f7ff;
+    --ta-shadow-xs: 0 1px 2px rgba(0, 0, 0, .35);
+    --ta-shadow-sm: 0 1px 3px rgba(0, 0, 0, .45), 0 1px 2px rgba(0, 0, 0, .35);
+    --ta-shadow-md: 0 10px 18px rgba(0, 0, 0, .35);
+}
+
+html.dark body {
+    background: var(--ta-gray-50);
+    color: var(--ta-gray-800);
+}
+
+html.dark .ta-shell {
+    background:
+        radial-gradient(circle at 20% 0%, rgba(70, 95, 255, .12), transparent 32rem),
+        var(--ta-gray-50);
+}
+
+html.dark .ta-sidebar {
+    background: rgba(10, 18, 38, .95);
+    border-right-color: var(--ta-gray-200);
+}
+
+html.dark .ta-header {
+    background: rgba(10, 18, 38, .72);
+    border-bottom-color: var(--ta-gray-200);
+}
+
+html.dark .ta-logo {
+    color: var(--ta-gray-900);
+}
+
+html.dark .ta-logo-mark {
+    background: rgba(70, 95, 255, .16);
+}
+
+html.dark .ta-logo-title {
+    color: #eef3ff;
+}
+
+html.dark .ta-logo-subtitle {
+    color: #a9b8d4;
+}
+
+html.dark .ta-logo-mark img {
+    filter: brightness(1.15) contrast(1.05);
+}
+
+html.dark .ta-sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, .08);
+    color: var(--ta-gray-900);
+}
+
+html.dark .ta-sidebar .nav-link.active {
+    background: rgba(70, 95, 255, .26);
+    color: #d9e2ff;
+}
+
+html.dark .ta-sidebar .nav-link img {
+    opacity: .92;
+    filter: invert(88%) sepia(9%) saturate(508%) hue-rotate(184deg) brightness(102%) contrast(93%);
+}
+
+html.dark .ta-sidebar .nav-link.active img {
+    filter: invert(94%) sepia(13%) saturate(1315%) hue-rotate(192deg) brightness(106%) contrast(104%);
+}
+
+html.dark .card {
+    background: rgba(12, 22, 44, .82);
+}
+
+html.dark .card,
+html.dark .card * {
+    color: inherit;
+}
+
+html.dark a {
+    color: #dbe7ff;
+}
+
+html.dark a:hover {
+    color: #ffffff;
+}
+
+html.dark .card a,
+html.dark .card a:visited {
+    color: #dbe7ff;
+}
+
+html.dark .card a:hover {
+    color: #ffffff;
+}
+
+html.dark .table thead th {
+    background: rgba(255, 255, 255, .04);
+    color: #9fb0cf;
+}
+
+html.dark .table,
+html.dark .table tbody td {
+    color: #d6e0f1;
+}
+
+html.dark .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #d6e0f1;
+    --bs-table-border-color: rgba(159, 176, 207, .25);
+    --bs-table-striped-bg: rgba(255, 255, 255, .025);
+    --bs-table-striped-color: #d6e0f1;
+    --bs-table-hover-bg: rgba(255, 255, 255, .04);
+    --bs-table-hover-color: #eef3ff;
+}
+
+html.dark .table tbody td {
+    border-color: rgba(159, 176, 207, .25);
+    background: transparent;
+}
+
+html.dark .table > :not(caption) > * > * {
+    background-color: transparent;
+}
+
+html.dark .table tbody tr {
+    background: rgba(12, 22, 44, .56);
+}
+
+html.dark .table tbody tr:hover {
+    background: rgba(255, 255, 255, .045);
+}
+
+html.dark .ta-surface-soft {
+    background: rgba(255, 255, 255, .035);
+    border-color: rgba(159, 176, 207, .28) !important;
+}
+
+html.dark .ta-surface-soft,
+html.dark .ta-surface-soft * {
+    color: #d6e0f1;
+}
+
+html.dark .form-control,
+html.dark .form-select {
+    background: rgba(255, 255, 255, .04);
+    border-color: var(--ta-gray-300);
+    color: #e8eefc;
+}
+
+html.dark .form-select option {
+    background: #101b34;
+    color: #e8eefc;
+}
+
+html.dark .form-select option:disabled {
+    color: #8ea1c5;
+}
+
+html.dark .form-select:required:invalid {
+    color: #9fb0cf;
+}
+
+html.dark .form-select option:checked {
+    background: #1b315f linear-gradient(0deg, #1b315f 0%, #1b315f 100%);
+    color: #f4f7ff;
+}
+
+html.dark .form-control::placeholder {
+    color: rgba(203, 213, 225, .7);
+}
+
+html.dark .form-control:focus,
+html.dark .form-select:focus {
+    border-color: #6f8dff;
+    box-shadow: 0 0 0 4px rgba(70, 95, 255, .22);
+}
+
+html.dark .btn-outline-secondary {
+    border-color: var(--ta-gray-300);
+    color: #dbe6fb;
+    background: rgba(255, 255, 255, .03);
+}
+
+html.dark .btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+html.dark .badge-soft {
+    background: rgba(70, 95, 255, .18);
+    color: #cdd7ff;
+}
+
+html.dark .text-muted {
+    color: #9fb0cf !important;
+}
+
+html.dark .ta-header-title,
+html.dark .ta-activity-title,
+html.dark .card h2,
+html.dark .card h3 {
+    color: #e7edf8;
+}
+
+html.dark .fw-semibold,
+html.dark .fw-medium,
+html.dark .h1,
+html.dark .h2,
+html.dark .h3,
+html.dark .h4,
+html.dark .h5,
+html.dark .h6 {
+    color: #e7edf8;
+}
+
+html.dark .ta-activity-message {
+    color: #a7b6d1;
+}
+
+html.dark .ta-user .fw-semibold {
+    color: #e7edf8;
+}
+
+html.dark .ta-header-meta,
+html.dark .ta-menu-label {
+    color: #9fb0cf;
+}
+
+html.dark .ta-status-pill.is-success {
+    background: rgba(3, 152, 85, .15);
+    color: #62d39b;
+}
+
+html.dark .ta-status-pill.is-danger {
+    background: rgba(217, 45, 32, .15);
+    color: #ff9a90;
+}
+
+html.dark .ta-mobile-toggle {
+    background: rgba(15, 23, 42, .86);
+}
+
+html.dark .modal-content {
+    background: rgba(12, 22, 44, .96);
+    color: #e7edf8;
+}
+
+html.dark .modal-footer.bg-light {
+    background: rgba(255, 255, 255, .03) !important;
+}
+
+html.dark .btn-close {
+    filter: invert(1) grayscale(1);
+}
+
+html.dark .ta-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+html.dark .btn-light {
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .12);
+    color: #e7edf8;
+}
+
+html.dark .btn-light:hover {
+    background: rgba(255, 255, 255, .12);
+}
+
+html.dark .alert-success,
+html.dark .alert-danger {
+    border-color: rgba(255, 255, 255, .12);
+    color: #e7edf8;
+}
+
+html.dark .alert-success {
+    background: rgba(3, 152, 85, .18);
+}
+
+html.dark .alert-danger {
+    background: rgba(217, 45, 32, .18);
+}
+
 * {
     border-color: var(--ta-gray-200);
 }

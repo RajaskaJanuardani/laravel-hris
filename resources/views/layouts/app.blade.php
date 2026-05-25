@@ -6,6 +6,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'HRIS RFID' }}</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo/e-absensi.png') }}">
+    <script>
+        // Apply theme before first paint to avoid flicker.
+        (() => {
+            try {
+                const stored = localStorage.getItem('ta-theme');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = stored || (prefersDark ? 'dark' : 'light');
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.documentElement.style.colorScheme = theme;
+            } catch (e) {}
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('tailadmin-nextjs-1.0.0/laravel-tailadmin.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -60,6 +72,10 @@
             </div>
             <div class="ta-header-actions">
                 <span class="badge rounded-pill badge-soft">{{ str_replace('_', ' ', auth()->user()->role ?? '') }}</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm ta-theme-toggle" data-theme-toggle aria-label="Toggle theme">
+                    <span class="ta-theme-icon" aria-hidden="true"></span>
+                    <span class="ta-theme-label d-none d-md-inline">Mode Gelap</span>
+                </button>
                 <div class="ta-user">
                     @php
                         $employeeAvatar = auth()->user()?->employee?->profile_photo_url ?? asset('tailadmin-nextjs-1.0.0/public/images/user/owner.jpg');
@@ -83,6 +99,45 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('tailadmin-nextjs-1.0.0/laravel-tailadmin.js') }}"></script>
+<script>
+    (() => {
+        const btn = document.querySelector('[data-theme-toggle]');
+        if (!btn) return;
+
+        const icon = btn.querySelector('.ta-theme-icon');
+        const label = btn.querySelector('.ta-theme-label');
+
+        const setChartTheme = (theme) => {
+            if (!window.Chart) return;
+            const dark = theme === 'dark';
+            Chart.defaults.color = dark ? '#c8d4e8' : '#475467';
+            Chart.defaults.borderColor = dark ? 'rgba(159,176,207,.25)' : '#e4e7ec';
+        };
+
+        const setUi = (theme) => {
+            document.documentElement.style.colorScheme = theme;
+            setChartTheme(theme);
+            if (!icon) return;
+            const isDark = theme === 'dark';
+            icon.innerHTML = isDark
+                ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+                : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+            if (label) label.textContent = isDark ? 'Mode Terang' : 'Mode Gelap';
+        };
+
+        const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+        setUi(getTheme());
+
+        btn.addEventListener('click', () => {
+            const next = getTheme() === 'dark' ? 'light' : 'dark';
+            document.documentElement.classList.toggle('dark', next === 'dark');
+            try { localStorage.setItem('ta-theme', next); } catch (e) {}
+            setUi(next);
+        });
+    })();
+</script>
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -104,7 +159,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-0 bg-light px-4 py-3">
+            <div class="modal-footer border-0 ta-surface-soft px-4 py-3">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteSubmit">Ya, Hapus</button>
             </div>
