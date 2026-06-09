@@ -13,9 +13,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('code')->unique()->nullable();
             $table->text('description')->nullable();
-            $table->decimal('salary_min', 12, 2)->nullable();
-            $table->decimal('salary_max', 12, 2)->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->decimal('tarif_harian_min', 12, 2)->nullable();
+            $table->decimal('tarif_harian_max', 12, 2)->nullable();
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

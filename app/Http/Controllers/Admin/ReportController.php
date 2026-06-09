@@ -100,13 +100,13 @@ class ReportController extends Controller
     {
         $from = Carbon::parse($request->input('from', now()->startOfMonth()->toDateString()));
         $to = Carbon::parse($request->input('to', now()->endOfMonth()->toDateString()));
-        $employeeId = $request->integer('employee_id') ?: null;
+        $employeeId = $request->integer('karyawan_id') ?: null;
 
         return view('admin.reports.overtime', [
             'from' => $from,
             'to' => $to,
             'employeeId' => $employeeId,
-            'employees' => Employee::active()->orderBy('first_name')->get(),
+            'karyawan' => Employee::active()->orderBy('nama_depan')->get(),
             'rows' => $this->reportService->overtime($from, $to, $employeeId),
         ]);
     }
@@ -115,7 +115,7 @@ class ReportController extends Controller
     {
         $from = Carbon::parse($request->input('from', now()->startOfMonth()->toDateString()));
         $to = Carbon::parse($request->input('to', now()->endOfMonth()->toDateString()));
-        $employeeId = $request->integer('employee_id') ?: null;
+        $employeeId = $request->integer('karyawan_id') ?: null;
 
         $name = 'lembur-'.$from->format('Y-m-d').'-'.$to->format('Y-m-d').'.xlsx';
 
@@ -127,14 +127,14 @@ class ReportController extends Controller
         $from = Carbon::parse($request->input('from', now()->startOfMonth()->toDateString()));
         $to = Carbon::parse($request->input('to', now()->endOfMonth()->toDateString()));
         $status = $request->input('status') ?: null;
-        $employeeId = $request->integer('employee_id') ?: null;
+        $employeeId = $request->integer('karyawan_id') ?: null;
 
         return view('admin.reports.leaves', [
             'from' => $from,
             'to' => $to,
             'status' => $status,
             'employeeId' => $employeeId,
-            'employees' => Employee::active()->orderBy('first_name')->get(),
+            'karyawan' => Employee::active()->orderBy('nama_depan')->get(),
             'rows' => $this->reportService->leaves($from, $to, $status, $employeeId),
         ]);
     }
@@ -144,7 +144,7 @@ class ReportController extends Controller
         $from = Carbon::parse($request->input('from', now()->startOfMonth()->toDateString()));
         $to = Carbon::parse($request->input('to', now()->endOfMonth()->toDateString()));
         $status = $request->input('status') ?: null;
-        $employeeId = $request->integer('employee_id') ?: null;
+        $employeeId = $request->integer('karyawan_id') ?: null;
 
         $name = 'cuti-izin-'.$from->format('Y-m-d').'-'.$to->format('Y-m-d').'.xlsx';
 
@@ -155,7 +155,7 @@ class ReportController extends Controller
     {
         $from = Carbon::parse($request->input('from', now()->startOfMonth()->toDateString()));
         $to = Carbon::parse($request->input('to', now()->endOfMonth()->toDateString()));
-        $periodId = $request->integer('payroll_period_id') ?: null;
+        $periodId = $request->integer('periode_penggajian_id') ?: null;
 
         return view('admin.reports.payroll', [
             'from' => $from,
@@ -170,7 +170,7 @@ class ReportController extends Controller
     {
         $from = Carbon::parse($request->input('from', now()->startOfMonth()->toDateString()));
         $to = Carbon::parse($request->input('to', now()->endOfMonth()->toDateString()));
-        $periodId = $request->integer('payroll_period_id') ?: null;
+        $periodId = $request->integer('periode_penggajian_id') ?: null;
 
         $name = 'payroll-'.$from->format('Y-m-d').'-'.$to->format('Y-m-d').'.xlsx';
 
@@ -185,7 +185,7 @@ class ReportController extends Controller
             'payslip' => $payslip,
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->download('slip-gaji-'.$payslip->employee?->employee_id.'-'.$payslip->payrollPeriod?->name.'.pdf');
+        return $pdf->download('slip-gaji-'.$payslip->employee?->karyawan_id.'-'.$payslip->payrollPeriod?->name.'.pdf');
     }
 
     public function rfidAudit(Request $request)

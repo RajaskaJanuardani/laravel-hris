@@ -1,4 +1,4 @@
-@extends('layouts.app', ['heading' => 'Ranking Keterlambatan'])
+@extends('layouts.app', ['heading' => 'Ranking Telat'])
 @section('content')
 <div class="card p-4 mb-4">
     <h2 class="h5 mb-3">Filter</h2>
@@ -14,10 +14,10 @@
     @endcomponent
 </div>
 
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="card overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
         <div>
-            <h2 class="h5 mb-1">Ranking Keterlambatan</h2>
+            <h2 class="h5 mb-1">Ranking Telat</h2>
             <div class="text-muted small">{{ $from->translatedFormat('d M Y') }} - {{ $to->translatedFormat('d M Y') }}</div>
         </div>
     </div>
@@ -35,21 +35,18 @@
             <tbody>
                 @forelse($rows as $i => $row)
                     <tr>
-                        <td>{{ $rows->firstItem() + $i }}</td>
-                        <td>
-                            <div class="fw-semibold">{{ $row->full_name }}</div>
-                            <div class="text-muted small">{{ $row->employee_id }}</div>
-                        </td>
+                        <td><span class="ta-code-chip">#{{ $rows->firstItem() + $i }}</span></td>
+                        <td>@include('shared._employee_table_cell', ['name' => $row->full_name, 'meta' => $row->karyawan_id])</td>
                         <td>{{ (int) $row->late_days }}</td>
-                        <td>{{ (int) $row->late_minutes_total }}</td>
-                        <td>{{ $row->latest_late_date ? \Carbon\Carbon::parse($row->latest_late_date)->format('d M Y') : '-' }}</td>
+                        <td>{{ (int) $row->menit_telat_total }}</td>
+                        <td><span class="ta-code-chip">{{ $row->latest_late_date ? \Carbon\Carbon::parse($row->latest_late_date)->format('d M Y') : '-' }}</span></td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-muted">Tidak ada data telat untuk periode ini.</td></tr>
+                    <tr><td colspan="5" class="ta-table-empty">Tidak ada data telat untuk periode ini.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    {{ $rows->links() }}
+    @include('shared._pagination', ['paginator' => $rows, 'label' => 'ranking'])
 </div>
 @endsection

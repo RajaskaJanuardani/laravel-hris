@@ -38,14 +38,14 @@
             <tr>
                 <td>
                     <strong>{{ $row->employee->full_name }}</strong><br>
-                    <span class="muted">{{ $row->employee->employee_id }}</span>
+                    <span class="muted">{{ $row->employee->karyawan_id }}</span>
                 </td>
-                <td>{{ $row->check_in_time?->format('H:i') ?? '-' }}</td>
-                <td>{{ $row->check_out_time?->format('H:i') ?? '-' }}</td>
-                <td class="right">{{ (int) $row->late_minutes }}</td>
-                <td class="right">{{ number_format((float) $row->overtime_hours, 2) }}</td>
-                <td>{{ $row->status }}</td>
-                <td>{{ $row->notes ?? '-' }}</td>
+                <td>{{ $row->jam_masuk?->format('H:i') ?? '-' }}</td>
+                <td>{{ $row->jam_pulang?->format('H:i') ?? '-' }}</td>
+                <td class="right">{{ (int) $row->menit_telat }}</td>
+                <td class="right">{{ number_format((float) $row->jam_lembur, 2) }}</td>
+                <td>{{ \App\Support\DisplayLabel::statusLabel($row->status) }}</td>
+                <td>{{ $row->catatan ?? '-' }}</td>
             </tr>
         @empty
             <tr><td colspan="7" class="muted">Tidak ada data.</td></tr>

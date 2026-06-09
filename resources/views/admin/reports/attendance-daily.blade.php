@@ -37,18 +37,16 @@
             <tbody>
                 @forelse($rows as $row)
                     <tr>
-                        <td>
-                            <div class="fw-semibold">{{ $row->employee->full_name }}</div>
-                            <div class="text-muted small">{{ $row->employee->employee_id }}</div>
-                        </td>
-                        <td>{{ $row->check_in_time?->format('H:i') ?? '-' }}</td>
-                        <td>{{ $row->check_out_time?->format('H:i') ?? '-' }}</td>
-                        <td>{{ (int) $row->late_minutes }}</td>
-                        <td>{{ number_format((float) $row->overtime_hours, 2) }}</td>
-                        <td><span class="badge text-bg-primary">{{ $row->status }}</span></td>
+                        <td>@include('shared._employee_table_cell', ['employee' => $row->employee])</td>
+                        <td><span class="ta-time-pill">{{ $row->jam_masuk?->format('H:i') ?? '-' }}</span></td>
+                        <td><span class="ta-time-pill">{{ $row->jam_pulang?->format('H:i') ?? '-' }}</span></td>
+                        <td>{{ (int) $row->menit_telat }}</td>
+                        <td>{{ number_format((float) $row->jam_lembur, 2) }}</td>
+                        @php($status = \App\Support\DisplayLabel::status($row->status))
+                        <td><span class="badge text-bg-{{ $status['badge'] }}">{{ $status['label'] }}</span></td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-muted">Tidak ada data absensi untuk tanggal ini.</td></tr>
+                    <tr><td colspan="6" class="ta-table-empty">Tidak ada data absensi untuk tanggal ini.</td></tr>
                 @endforelse
             </tbody>
         </table>

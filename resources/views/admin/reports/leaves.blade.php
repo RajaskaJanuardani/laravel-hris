@@ -16,24 +16,24 @@
             <select class="form-select" name="status">
                 <option value="">Semua</option>
                 @foreach(['pending','approved','rejected'] as $s)
-                    <option value="{{ $s }}" @selected($status===$s)>{{ ucfirst($s) }}</option>
+                    <option value="{{ $s }}" @selected($status===$s)>{{ \App\Support\DisplayLabel::statusLabel($s) }}</option>
                 @endforeach
             </select>
         </div>
         <div class="col-md-3">
             <label class="form-label">Karyawan</label>
-            <select class="form-select" name="employee_id">
+            <select class="form-select" name="karyawan_id">
                 <option value="">Semua</option>
-                @foreach($employees as $emp)
-                    <option value="{{ $emp->id }}" @selected($employeeId===$emp->id)>{{ $emp->full_name }} ({{ $emp->employee_id }})</option>
+                @foreach($karyawan as $emp)
+                    <option value="{{ $emp->id }}" @selected($employeeId===$emp->id)>{{ $emp->full_name }} ({{ $emp->karyawan_id }})</option>
                 @endforeach
             </select>
         </div>
     @endcomponent
 </div>
 
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="card overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
         <div>
             <h2 class="h5 mb-1">Pengajuan Cuti & Izin</h2>
             <div class="text-muted small">{{ $from->translatedFormat('d M Y') }} - {{ $to->translatedFormat('d M Y') }}</div>
@@ -44,28 +44,26 @@
     </div>
     <div class="table-responsive">
         <table class="table align-middle">
-            <thead><tr><th>Karyawan</th><th>Tipe</th><th>Tanggal</th><th>Durasi</th><th>Status</th><th>Approved By</th></tr></thead>
+            <thead><tr><th>Karyawan</th><th>Tipe</th><th>Tanggal</th><th>Durasi</th><th>Status</th><th>Disetujui Oleh</th></tr></thead>
             <tbody>
             @forelse($rows as $row)
                 <tr>
-                    <td>
-                        <div class="fw-semibold">{{ $row->employee->full_name }}</div>
-                        <div class="text-muted small">{{ $row->employee->employee_id }}</div>
-                    </td>
+                    <td>@include('shared._employee_table_cell', ['employee' => $row->employee])</td>
                     <td>{{ $row->leaveType->name }}</td>
-                    <td>{{ $row->start_date->format('d M') }} - {{ $row->end_date->format('d M Y') }}</td>
-                    <td>{{ $row->number_of_days }} hari</td>
+                    <td><span class="ta-code-chip">{{ $row->tanggal_mulai->format('d M') }} - {{ $row->tanggal_selesai->format('d M Y') }}</span></td>
+                    <td>{{ $row->jumlah_hari }} hari</td>
                     <td>
-                        <span class="badge text-bg-{{ $row->status === 'approved' ? 'success' : ($row->status === 'rejected' ? 'danger' : 'warning') }}">{{ $row->status }}</span>
+                        @php($status = \App\Support\DisplayLabel::status($row->status))
+                        <span class="badge text-bg-{{ $status['badge'] }}">{{ $status['label'] }}</span>
                     </td>
                     <td>{{ $row->approvedBy?->name ?? '-' }}</td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="text-muted">Belum ada pengajuan cuti/izin pada periode ini.</td></tr>
+                <tr><td colspan="6" class="ta-table-empty">Belum ada pengajuan cuti/izin pada periode ini.</td></tr>
             @endforelse
             </tbody>
         </table>
     </div>
-    {{ $rows->links() }}
+    @include('shared._pagination', ['paginator' => $rows, 'label' => 'pengajuan'])
 </div>
 @endsection

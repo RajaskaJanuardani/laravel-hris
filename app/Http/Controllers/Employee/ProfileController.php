@@ -24,7 +24,7 @@ class ProfileController extends Controller
         abort_unless($employee, 404, 'Profil karyawan belum tersedia.');
 
         $data = $request->validated();
-        $photoPath = $employee->profile_photo_path;
+        $photoPath = $employee->path_foto_profil;
 
         if ($request->hasFile('profile_photo')) {
             if ($photoPath) {
@@ -35,9 +35,9 @@ class ProfileController extends Controller
         }
 
         $employee->update([
-            'phone' => $data['phone'] ?? null,
-            'address' => $data['address'] ?? null,
-            'profile_photo_path' => $photoPath,
+            'telepon' => $data['telepon'] ?? null,
+            'alamat' => $data['alamat'] ?? null,
+            'path_foto_profil' => $photoPath,
         ]);
 
         return redirect()

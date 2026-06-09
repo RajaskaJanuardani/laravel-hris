@@ -8,41 +8,44 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('payslips', function (Blueprint $table) {
+        Schema::create('slip_gaji', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
-            $table->foreignId('payroll_period_id')->constrained()->onDelete('restrict');
-            $table->date('payroll_date');
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
+            $table->foreignId('periode_penggajian_id')->constrained('periode_penggajian')->onDelete('restrict');
+            $table->date('tanggal_penggajian');
             
             // Attendance data
-            $table->integer('working_days')->default(0);
-            $table->integer('absent_days')->default(0);
-            $table->integer('late_count')->default(0);
-            $table->decimal('late_deduction', 12, 2)->default(0);
-            $table->decimal('overtime_hours', 8, 2)->default(0);
-            $table->decimal('overtime_amount', 12, 2)->default(0);
+            $table->integer('hari_kerja')->default(0);
+            $table->integer('hari_tidak_hadir')->default(0);
+            $table->integer('jumlah_telat')->default(0);
+            $table->unsignedInteger('total_menit_telat')->default(0);
+            $table->decimal('potongan_telat', 12, 2)->default(0);
+            $table->decimal('jam_lembur', 8, 2)->default(0);
+            $table->decimal('upah_lembur', 12, 2)->default(0);
             
             // Salary breakdown
-            $table->decimal('base_salary', 12, 2);
-            $table->decimal('total_allowance', 12, 2)->default(0);
-            $table->decimal('total_deduction', 12, 2)->default(0);
-            $table->decimal('net_salary', 12, 2);
+            $table->decimal('tarif_harian', 12, 2)->default(0);
+            $table->decimal('gaji_pokok', 12, 2);
+            $table->decimal('total_tunjangan', 12, 2)->default(0);
+            $table->decimal('bonus_thr', 12, 2)->default(0);
+            $table->decimal('total_potongan', 12, 2)->default(0);
+            $table->decimal('gaji_bersih', 12, 2);
             
             $table->enum('status', ['draft', 'final', 'paid'])->default('draft');
-            $table->timestamp('paid_at')->nullable();
-            $table->text('notes')->nullable();
+            $table->timestamp('dibayar_pada')->nullable();
+            $table->text('catatan')->nullable();
             
             $table->timestamps();
             $table->softDeletes();
             
-            $table->unique(['employee_id', 'payroll_period_id']);
-            $table->index(['payroll_date', 'status']);
+            $table->unique(['karyawan_id', 'periode_penggajian_id']);
+            $table->index(['tanggal_penggajian', 'status']);
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('payslips');
+        Schema::dropIfExists('slip_gaji');
     }
 };
  

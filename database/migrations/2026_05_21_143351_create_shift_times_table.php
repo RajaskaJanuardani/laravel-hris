@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('shift_times', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->time('jam_mulai');
+            $table->time('jam_selesai');
             $table->integer('working_hours')->default(8);
             $table->unsignedInteger('late_tolerance_minutes')->default(10);
             $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\LeaveTypeController;
 use App\Http\Controllers\Admin\EmployeeController as AdminEmployeeController;
 use App\Http\Controllers\Admin\LeaveController as AdminLeaveController;
 use App\Http\Controllers\Admin\OvertimeApprovalController;
@@ -51,10 +51,11 @@ Route::middleware('auth')->get('/dashboard', function () {
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::resource('/employees', AdminEmployeeController::class);
+    Route::resource('/karyawan', AdminEmployeeController::class)->names('karyawan');
     Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/monitoring', [AdminAttendanceController::class, 'monitoring'])->name('attendance.monitoring');
     Route::post('/attendance/simulate', [AdminAttendanceController::class, 'simulate'])->name('attendance.simulate');
+    Route::patch('/attendance/manual-status', [AdminAttendanceController::class, 'updateManualStatus'])->name('attendance.manual-status');
     Route::get('/attendance/report', [AdminAttendanceController::class, 'report'])->name('attendance.report');
     Route::get('/leaves', [AdminLeaveController::class, 'index'])->name('leaves.index');
     Route::patch('/leaves/{leave}/approve', [AdminLeaveController::class, 'approve'])->name('leaves.approve');
@@ -66,8 +67,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/payroll/create', [PayrollController::class, 'create'])->name('payroll.create');
     Route::post('/payroll', [PayrollController::class, 'store'])->name('payroll.store');
     Route::get('/payslips', [PayrollController::class, 'payslips'])->name('payroll.payslips');
-    Route::get('/settings/leave-types', [DepartmentController::class, 'leaveTypes'])->name('settings.leave-types');
-    Route::post('/settings/leave-types', [DepartmentController::class, 'storeLeaveType'])->name('settings.leave-types.store');
+    Route::get('/settings/leave-types', [LeaveTypeController::class, 'index'])->name('settings.leave-types');
+    Route::post('/settings/leave-types', [LeaveTypeController::class, 'store'])->name('settings.leave-types.store');
 
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');

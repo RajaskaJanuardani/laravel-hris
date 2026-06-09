@@ -3,25 +3,38 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Department;
 use App\Models\Employee;
-use App\Models\Position;
 use App\Models\RFIDCard;
-use App\Models\ShiftTime;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $employees = Employee::with(['user', 'rfidCards', 'currentLeave'])->latest()->paginate(10);
+        $search = trim((string) $request->input('q'));
 
-        return view('admin.employees.index', compact('employees'));
+        $karyawan = Employee::with(['user', 'rfidCards', 'currentLeave'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('nomor_karyawan', 'like', "%{$search}%")
+                        ->orWhere('nama_depan', 'like', "%{$search}%")
+                        ->orWhere('nama_belakang', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('jabatan', 'like', "%{$search}%")
+                        ->orWhereHas('rfidCards', fn ($rfidQuery) => $rfidQuery->where('uid', 'like', "%{$search}%"));
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.employees.index', compact('karyawan', 'search'));
     }
 
     /**
@@ -38,25 +51,26 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
+        $data['tarif_harian'] = Employee::dailyRateFor($data['jabatan']);
 
         $user = User::create([
-            'name' => $data['first_name'].' '.$data['last_name'],
+            'name' => $data['nama_depan'].' '.$data['nama_belakang'],
             'email' => $data['email'],
             'password' => Hash::make($data['password'] ?? 'password'),
             'role' => $data['role'],
         ]);
 
-        $employee = Employee::create($data + ['user_id' => $user->id] + $this->legacyDefaults());
+        $employee = Employee::create($data + ['pengguna_id' => $user->id]);
 
         if ($request->filled('rfid_uid')) {
             RFIDCard::create([
-                'employee_id' => $employee->id,
+                'karyawan_id' => $employee->id,
                 'uid' => strtoupper($request->rfid_uid),
-                'card_label' => $request->card_label,
+                'label_kartu' => $request->label_kartu,
             ]);
         }
 
-        return redirect()->route('admin.employees.index')->with('success', 'Karyawan berhasil ditambahkan.');
+        return redirect()->route('admin.karyawan.index')->with('success', 'Karyawan berhasil ditambahkan.');
     }
 
     /**
@@ -64,7 +78,7 @@ class EmployeeController extends Controller
      */
     public function show(string $id)
     {
-        $employee = Employee::with(['user', 'rfidCards', 'attendances', 'currentLeave', 'overtimeApprovals'])->findOrFail($id);
+        $employee = Employee::with(['user', 'rfidCards', 'absensi', 'currentLeave', 'overtimeApprovals'])->findOrFail($id);
 
         return view('admin.employees.show', compact('employee'));
     }
@@ -83,22 +97,43 @@ class EmployeeController extends Controller
     public function update(Request $request, string $id)
     {
         $employee = Employee::findOrFail($id);
-        $data = $this->validated($request, $employee->id, $employee->user_id);
-        $employee->update($data + $this->legacyDefaults());
+        $currentCard = $employee->getActiveRFIDCard() ?? $employee->rfidCards()->latest('id')->first();
+        $data = $this->validated($request, $employee->id, $employee->pengguna_id, $currentCard?->id);
+        $data['tarif_harian'] = Employee::dailyRateFor($data['jabatan']);
+
+        $employee->update($data);
         $employee->user->update([
-            'name' => $data['first_name'].' '.$data['last_name'],
+            'name' => $data['nama_depan'].' '.$data['nama_belakang'],
             'email' => $data['email'],
             'role' => $data['role'],
         ]);
 
-        if ($request->filled('rfid_uid')) {
-            RFIDCard::updateOrCreate(
-                ['employee_id' => $employee->id, 'uid' => strtoupper($request->rfid_uid)],
-                ['card_label' => $request->card_label, 'status' => 'active']
-            );
+        $normalizedUid = strtoupper(trim((string) $request->input('rfid_uid')));
+        if ($normalizedUid !== '') {
+            $card = $currentCard;
+
+            if ($card) {
+                $card->update([
+                    'uid' => $normalizedUid,
+                    'label_kartu' => $request->label_kartu ?: $card->label_kartu,
+                    'status' => 'active',
+                ]);
+            } else {
+                $card = RFIDCard::create([
+                    'karyawan_id' => $employee->id,
+                    'uid' => $normalizedUid,
+                    'label_kartu' => $request->label_kartu,
+                    'status' => 'active',
+                ]);
+            }
+
+            RFIDCard::where('karyawan_id', $employee->id)
+                ->where('id', '!=', $card->id)
+                ->where('status', 'active')
+                ->update(['status' => 'inactive']);
         }
 
-        return redirect()->route('admin.employees.index')->with('success', 'Karyawan berhasil diperbarui.');
+        return redirect()->route('admin.karyawan.index')->with('success', 'Karyawan berhasil diperbarui.');
     }
 
     /**
@@ -108,7 +143,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::with('user')->findOrFail($id);
 
-        $employee->user?->update(['is_active' => false]);
+        $employee->user?->update(['aktif' => false]);
         $employee->delete();
 
         return back()->with('success', 'Karyawan berhasil dihapus.');
@@ -121,49 +156,34 @@ class EmployeeController extends Controller
         ];
     }
 
-    private function legacyDefaults(): array
-    {
-        $department = Department::firstOrCreate(
-            ['code' => 'GENERAL'],
-            ['name' => 'Umum', 'description' => 'Default internal', 'is_active' => true]
-        );
-        $position = Position::firstOrCreate(
-            ['code' => 'EMP'],
-            ['name' => 'Karyawan', 'description' => 'Default internal', 'is_active' => true]
-        );
-        $shift = ShiftTime::firstOrCreate(
-            ['name' => 'Reguler'],
-            ['start_time' => '08:00:00', 'end_time' => '17:00:00', 'working_hours' => 8, 'late_tolerance_minutes' => 10]
-        );
-
-        return [
-            'department_id' => $department->id,
-            'position_id' => $position->id,
-            'shift_time_id' => $shift->id,
-        ];
-    }
-
-    private function validated(Request $request, ?int $employeeId = null, ?int $userId = null): array
+    private function validated(Request $request, ?int $employeeId = null, ?int $userId = null, ?int $rfidCardId = null): array
     {
         return $request->validate([
-            'employee_id' => ['required', 'string', 'max:50', 'unique:employees,employee_id,'.$employeeId],
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'unique:employees,email,'.$employeeId, 'unique:users,email,'.$userId],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'date_of_birth' => ['nullable', 'date'],
-            'gender' => ['nullable', 'in:male,female'],
-            'address' => ['nullable', 'string'],
-            'job_role' => ['required', 'in:staff,mandor'],
-            'hire_date' => ['required', 'date'],
-            'contract_end_date' => ['nullable', 'date', 'after_or_equal:hire_date'],
-            'salary' => ['required', 'numeric', 'min:0'],
-            'employment_type' => ['required', 'in:permanent,contract,internship'],
-            'is_active' => ['sometimes', 'boolean'],
+            'karyawan_id' => ['required', 'string', 'max:50', 'unique:karyawan,nomor_karyawan,'.$employeeId],
+            'nama_depan' => ['required', 'string', 'max:100'],
+            'nama_belakang' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'unique:karyawan,email,'.$employeeId, 'unique:pengguna,email,'.$userId],
+            'telepon' => ['nullable', 'string', 'max:30'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'jenis_kelamin' => ['nullable', 'in:male,female'],
+            'alamat' => ['nullable', 'string'],
+            'jabatan' => ['required', 'in:staff,mandor'],
+            'tanggal_masuk' => ['required', 'date'],
+            'tanggal_selesai_kontrak' => ['nullable', 'date', 'after_or_equal:tanggal_masuk'],
+            'tarif_harian' => ['nullable', 'numeric', 'min:0'],
+            'tipe_karyawan' => ['required', 'in:permanent,contract,internship'],
+            'aktif' => ['sometimes', 'boolean'],
             'role' => ['required', 'in:admin,employee'],
             'password' => [$employeeId ? 'nullable' : 'required', 'string', 'min:8'],
-            'rfid_uid' => ['nullable', 'string', 'max:100'],
-            'card_label' => ['nullable', 'string', 'max:100'],
+            'rfid_uid' => [
+                'nullable',
+                'string',
+                'max:100',
+                Rule::unique('kartu_rfid', 'uid')
+                    ->ignore($rfidCardId)
+                    ->where(fn ($query) => $query->whereNull('deleted_at')),
+            ],
+            'label_kartu' => ['nullable', 'string', 'max:100'],
         ]);
     }
 }

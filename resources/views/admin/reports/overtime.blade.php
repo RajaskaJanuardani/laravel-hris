@@ -13,18 +13,18 @@
         </div>
         <div class="col-md-4">
             <label class="form-label">Karyawan</label>
-            <select class="form-select" name="employee_id">
+            <select class="form-select" name="karyawan_id">
                 <option value="">Semua</option>
-                @foreach($employees as $emp)
-                    <option value="{{ $emp->id }}" @selected($employeeId===$emp->id)>{{ $emp->full_name }} ({{ $emp->employee_id }})</option>
+                @foreach($karyawan as $emp)
+                    <option value="{{ $emp->id }}" @selected($employeeId===$emp->id)>{{ $emp->full_name }} ({{ $emp->karyawan_id }})</option>
                 @endforeach
             </select>
         </div>
     @endcomponent
 </div>
 
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="card overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
         <div>
             <h2 class="h5 mb-1">Approval Lembur</h2>
             <div class="text-muted small">{{ $from->translatedFormat('d M Y') }} - {{ $to->translatedFormat('d M Y') }}</div>
@@ -35,22 +35,22 @@
     </div>
     <div class="table-responsive">
         <table class="table align-middle">
-            <thead><tr><th>Tanggal</th><th>Karyawan</th><th>Jam</th><th>Catatan</th><th>Approved By</th></tr></thead>
+            <thead><tr><th>Tanggal</th><th>Karyawan</th><th>Jam</th><th>Catatan</th><th>Disetujui Oleh</th></tr></thead>
             <tbody>
             @forelse($rows as $row)
                 <tr>
-                    <td>{{ $row->overtime_date->format('d M Y') }}</td>
-                    <td>{{ $row->employee->full_name }}</td>
-                    <td>{{ $row->start_time?->format('H:i') ?? '17:00' }} - {{ $row->end_time?->format('H:i') ?? '-' }}</td>
-                    <td>{{ $row->notes ?? '-' }}</td>
+                    <td><span class="ta-code-chip">{{ $row->tanggal_lembur->format('d M Y') }}</span></td>
+                    <td>@include('shared._employee_table_cell', ['employee' => $row->employee])</td>
+                    <td><span class="ta-time-pill">{{ $row->jam_mulai?->format('H:i') ?? '17:00' }} - {{ $row->jam_selesai?->format('H:i') ?? '-' }}</span></td>
+                    <td>{{ $row->catatan ?? '-' }}</td>
                     <td>{{ $row->approvedBy?->name ?? '-' }}</td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="text-muted">Belum ada lembur pada periode ini.</td></tr>
+                <tr><td colspan="5" class="ta-table-empty">Belum ada lembur pada periode ini.</td></tr>
             @endforelse
             </tbody>
         </table>
     </div>
-    {{ $rows->links() }}
+    @include('shared._pagination', ['paginator' => $rows, 'label' => 'lembur'])
 </div>
 @endsection

@@ -8,14 +8,14 @@ class PayslipController extends Controller
 {
     public function index()
     {
-        $payslips = auth()->user()->employee?->payslips()->with('payrollPeriod')->latest()->paginate(12) ?? collect();
+        $slip_gaji = auth()->user()->employee?->slip_gaji()->with('payrollPeriod')->latest()->paginate(12) ?? collect();
 
-        return view('employee.payslip.index', compact('payslips'));
+        return view('employee.payslip.index', compact('slip_gaji'));
     }
 
     public function show(string $id)
     {
-        $payslip = auth()->user()->employee?->payslips()->with('payrollPeriod')->findOrFail($id);
+        $payslip = auth()->user()->employee?->slip_gaji()->with('payrollPeriod')->findOrFail($id);
 
         return view('employee.payslip.show', compact('payslip'));
     }

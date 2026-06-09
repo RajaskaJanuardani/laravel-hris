@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'HRIS RFID' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo/e-absensi.png') }}">
+    <title>{{ $title ?? 'WFO.id' }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/web-logo-icon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('tailadmin-nextjs-1.0.0/laravel-tailadmin.css') }}" rel="stylesheet">
 </head>
@@ -14,18 +14,18 @@
             <a class="ta-logo mb-4" href="{{ route('login') }}">
                 <span class="ta-logo-mark">
                     <img
-                        src="{{ asset('images/logo/e-absensi.png') }}"
-                        alt="E-Absensi"
+                        src="{{ asset('images/logo/web-logo.png') }}"
+                        alt="WFO.id"
                         onerror="this.onerror=null;this.src='{{ asset('tailadmin-nextjs-1.0.0/public/images/logo/logo-icon.svg') }}';"
                     >
                 </span>
                 <span>
-                    <span class="ta-logo-title d-block">HRIS RFID</span>
-                    <span class="ta-logo-subtitle">Employee attendance</span>
+                    <span class="ta-logo-title d-block">WFO.id</span>
+                    <span class="ta-logo-subtitle">Absensi & payroll</span>
                 </span>
             </a>
-            <h1 class="ta-auth-title mb-3">Sistem Informasi Karyawan dan Absensi RFID</h1>
-            <p class="ta-auth-copy mb-0">Kelola karyawan, absensi, cuti, dan payroll dalam dashboard enterprise yang ringan dan rapi.</p>
+            <h1 class="ta-auth-title mb-3">WFO.id</h1>
+            <p class="ta-auth-copy mb-0">Sistem absensi RFID, cuti, lembur, dan payroll karyawan dalam satu dashboard yang rapi.</p>
         </section>
         <section class="ta-auth-panel">
             <div class="ta-auth-card">

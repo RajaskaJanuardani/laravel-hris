@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->string('profile_photo_path')->nullable()->after('address');
+        Schema::table('karyawan', function (Blueprint $table) {
+            $table->string('path_foto_profil')->nullable()->after('alamat');
         });
     }
 
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->dropColumn('profile_photo_path');
+        Schema::table('karyawan', function (Blueprint $table) {
+            $table->dropColumn('path_foto_profil');
         });
     }
 };

@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('leave_types', function (Blueprint $table) {
+        Schema::create('jenis_cuti', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Cuti Tahunan, Sakit, Izin, etc
-            $table->string('code')->unique();
-            $table->integer('quota_per_year')->default(0); // 0 = unlimited
-            $table->boolean('requires_approval')->default(true);
-            $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->string('nama')->unique(); // Cuti Tahunan, Sakit, Izin, etc
+            $table->string('kode')->unique();
+            $table->integer('kuota_per_tahun')->default(0); // 0 = unlimited
+            $table->boolean('perlu_persetujuan')->default(true);
+            $table->text('deskripsi')->nullable();
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -23,7 +23,7 @@ return new class extends Migration
  
     public function down(): void
     {
-        Schema::dropIfExists('leave_types');
+        Schema::dropIfExists('jenis_cuti');
     }
 };
  

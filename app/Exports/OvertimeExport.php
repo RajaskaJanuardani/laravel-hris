@@ -23,9 +23,9 @@ class OvertimeExport implements FromCollection, WithHeadings, WithMapping
         return OvertimeApproval::query()
             ->with(['employee', 'approvedBy'])
             ->approved()
-            ->whereBetween('overtime_date', [$this->from->toDateString(), $this->to->toDateString()])
-            ->when($this->employeeId, fn ($q) => $q->where('employee_id', $this->employeeId))
-            ->latest('overtime_date')
+            ->whereBetween('tanggal_lembur', [$this->from->toDateString(), $this->to->toDateString()])
+            ->when($this->employeeId, fn ($q) => $q->where('karyawan_id', $this->employeeId))
+            ->latest('tanggal_lembur')
             ->get();
     }
 
@@ -38,21 +38,20 @@ class OvertimeExport implements FromCollection, WithHeadings, WithMapping
             'Jam Mulai',
             'Jam Selesai',
             'Catatan',
-            'Approved By',
+            'Disetujui Oleh',
         ];
     }
 
     public function map($row): array
     {
         return [
-            $row->overtime_date?->format('Y-m-d'),
-            $row->employee?->employee_id,
+            $row->tanggal_lembur?->format('Y-m-d'),
+            $row->employee?->karyawan_id,
             $row->employee?->full_name,
-            $row->start_time?->format('H:i') ?? '17:00',
-            $row->end_time?->format('H:i'),
-            $row->notes,
+            $row->jam_mulai?->format('H:i') ?? '17:00',
+            $row->jam_selesai?->format('H:i'),
+            $row->catatan,
             $row->approvedBy?->name,
         ];
     }
 }
-

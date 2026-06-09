@@ -8,26 +8,26 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('attendances', function (Blueprint $table) {
+        Schema::create('absensi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
-            $table->date('attendance_date');
-            $table->time('check_in_time')->nullable();
-            $table->time('check_out_time')->nullable();
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
+            $table->date('tanggal_absensi');
+            $table->time('jam_masuk')->nullable();
+            $table->time('jam_pulang')->nullable();
             $table->enum('status', ['present', 'late', 'absent', 'leave', 'sick', 'holiday'])->default('absent');
-            $table->unsignedInteger('late_minutes')->default(0);
-            $table->decimal('overtime_hours', 5, 2)->default(0);
-            $table->text('notes')->nullable();
+            $table->unsignedInteger('menit_telat')->default(0);
+            $table->decimal('jam_lembur', 5, 2)->default(0);
+            $table->text('catatan')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
-            $table->unique(['employee_id', 'attendance_date']);
-            $table->index(['attendance_date', 'status']);
+            $table->unique(['karyawan_id', 'tanggal_absensi']);
+            $table->index(['tanggal_absensi', 'status']);
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('attendances');
+        Schema::dropIfExists('absensi');
     }
 };

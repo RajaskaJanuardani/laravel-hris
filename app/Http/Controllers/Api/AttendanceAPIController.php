@@ -12,7 +12,7 @@ class AttendanceAPIController extends Controller
     {
         $data = $request->validate([
             'uid' => ['required', 'string', 'max:100'],
-            'device_name' => ['nullable', 'string', 'max:100'],
+            'nama_perangkat' => ['nullable', 'string', 'max:100'],
             'token' => ['nullable', 'string', 'max:100'],
         ]);
 

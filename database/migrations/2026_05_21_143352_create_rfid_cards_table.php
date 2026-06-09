@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('rfid_cards', function (Blueprint $table) {
+        Schema::create('kartu_rfid', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
             $table->string('uid')->unique(); // RFID UID dari kartu
-            $table->string('card_label')->nullable();
+            $table->string('label_kartu')->nullable();
             $table->enum('status', ['active', 'inactive', 'lost'])->default('active');
-            $table->timestamp('issued_at')->useCurrent();
-            $table->timestamp('expired_at')->nullable();
-            $table->text('notes')->nullable();
+            $table->timestamp('diterbitkan_pada')->useCurrent();
+            $table->timestamp('kedaluwarsa_pada')->nullable();
+            $table->text('catatan')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
@@ -26,6 +26,6 @@ return new class extends Migration
  
     public function down(): void
     {
-        Schema::dropIfExists('rfid_cards');
+        Schema::dropIfExists('kartu_rfid');
     }
 };

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Leave;
+use App\Support\DisplayLabel;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -23,10 +24,10 @@ class LeavesExport implements FromCollection, WithHeadings, WithMapping
     {
         return Leave::query()
             ->with(['employee', 'leaveType', 'approvedBy'])
-            ->whereDate('start_date', '<=', $this->to->toDateString())
-            ->whereDate('end_date', '>=', $this->from->toDateString())
+            ->whereDate('tanggal_mulai', '<=', $this->to->toDateString())
+            ->whereDate('tanggal_selesai', '>=', $this->from->toDateString())
             ->when($this->status, fn ($q) => $q->where('status', $this->status))
-            ->when($this->employeeId, fn ($q) => $q->where('employee_id', $this->employeeId))
+            ->when($this->employeeId, fn ($q) => $q->where('karyawan_id', $this->employeeId))
             ->latest()
             ->get();
     }
@@ -41,24 +42,23 @@ class LeavesExport implements FromCollection, WithHeadings, WithMapping
             'Selesai',
             'Durasi (hari)',
             'Status',
-            'Approved By',
-            'Approved At',
+            'Disetujui Oleh',
+            'Waktu Persetujuan',
         ];
     }
 
     public function map($row): array
     {
         return [
-            $row->employee?->employee_id,
+            $row->employee?->karyawan_id,
             $row->employee?->full_name,
             $row->leaveType?->name,
-            $row->start_date?->format('Y-m-d'),
-            $row->end_date?->format('Y-m-d'),
-            (int) $row->number_of_days,
-            $row->status,
+            $row->tanggal_mulai?->format('Y-m-d'),
+            $row->tanggal_selesai?->format('Y-m-d'),
+            (int) $row->jumlah_hari,
+            DisplayLabel::statusLabel($row->status),
             $row->approvedBy?->name,
-            $row->approved_at?->format('Y-m-d H:i:s'),
+            $row->disetujui_pada?->format('Y-m-d H:i:s'),
         ];
     }
 }
-

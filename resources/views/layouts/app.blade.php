@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'HRIS RFID' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo/e-absensi.png') }}">
+    <title>{{ $title ?? 'WFO.id' }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/web-logo-icon.png') }}">
     <script>
         // Apply theme before first paint to avoid flicker.
         (() => {
@@ -13,7 +13,9 @@
                 const stored = localStorage.getItem('ta-theme');
                 const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const theme = stored || (prefersDark ? 'dark' : 'light');
+                const sidebarCollapsed = localStorage.getItem('ta-sidebar-collapsed') === '1';
                 document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.documentElement.classList.toggle('ta-sidebar-collapsed', sidebarCollapsed);
                 document.documentElement.style.colorScheme = theme;
             } catch (e) {}
         })();
@@ -28,41 +30,40 @@
         <a class="ta-logo" href="{{ route('dashboard') }}">
             <span class="ta-logo-mark">
                 <img
-                    src="{{ asset('images/logo/e-absensi.png') }}"
-                    alt="E-Absensi"
+                    src="{{ asset('images/logo/web-logo.png') }}"
+                    alt="WFO.id"
                     onerror="this.onerror=null;this.src='{{ asset('tailadmin-nextjs-1.0.0/public/images/logo/logo-icon.svg') }}';"
                 >
             </span>
             <span>
-                <span class="ta-logo-title d-block">HRIS RFID</span>
-                <span class="ta-logo-subtitle">Employee attendance</span>
+                <span class="ta-logo-title d-block">WFO.id</span>
+                <span class="ta-logo-subtitle">Absensi & payroll</span>
             </span>
         </a>
         <div class="ta-menu-label">Menu</div>
         <nav class="nav flex-column">
             @if(auth()->user()?->isAdmin())
-                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/grid.svg') }}" alt="">Dashboard</a>
-                <a class="nav-link {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}" href="{{ route('admin.employees.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/group.svg') }}" alt="">Karyawan</a>
-                <a class="nav-link {{ request()->routeIs('admin.attendance.*') ? 'active' : '' }}" href="{{ route('admin.attendance.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/time.svg') }}" alt="">Absensi RFID</a>
-                <a class="nav-link {{ request()->routeIs('admin.leaves.*') ? 'active' : '' }}" href="{{ route('admin.leaves.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/calender-line.svg') }}" alt="">Cuti & Izin</a>
-                <a class="nav-link {{ request()->routeIs('admin.overtime.*') ? 'active' : '' }}" href="{{ route('admin.overtime.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/task.svg') }}" alt="">Approval Lembur</a>
-                <a class="nav-link {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}" href="{{ route('admin.payroll.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/dollar-line.svg') }}" alt="">Payroll</a>
-                <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/docs.svg') }}" alt="">Laporan</a>
-                <a class="nav-link {{ request()->routeIs('admin.settings.leave-types') ? 'active' : '' }}" href="{{ route('admin.settings.leave-types') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/list.svg') }}" alt="">Tipe Cuti</a>
+                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}" title="Dashboard"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/grid.svg') }}" alt="">Dashboard</a>
+                <a class="nav-link {{ request()->routeIs('admin.karyawan.*') ? 'active' : '' }}" href="{{ route('admin.karyawan.index') }}" title="Karyawan"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/group.svg') }}" alt="">Karyawan</a>
+                <a class="nav-link {{ request()->routeIs('admin.attendance.*') ? 'active' : '' }}" href="{{ route('admin.attendance.index') }}" title="Absensi RFID"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/time.svg') }}" alt="">Absensi RFID</a>
+                <a class="nav-link {{ request()->routeIs('admin.leaves.*') ? 'active' : '' }}" href="{{ route('admin.leaves.index') }}" title="Cuti & Izin"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/calender-line.svg') }}" alt="">Cuti & Izin</a>
+                <a class="nav-link {{ request()->routeIs('admin.overtime.*') ? 'active' : '' }}" href="{{ route('admin.overtime.index') }}" title="Approval Lembur"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/task.svg') }}" alt="">Approval Lembur</a>
+                <a class="nav-link {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}" href="{{ route('admin.payroll.index') }}" title="Payroll"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/dollar-line.svg') }}" alt="">Payroll</a>
+                <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}" title="Laporan"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/docs.svg') }}" alt="">Laporan</a>
+                <a class="nav-link {{ request()->routeIs('admin.settings.leave-types') ? 'active' : '' }}" href="{{ route('admin.settings.leave-types') }}" title="Tipe Cuti"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/list.svg') }}" alt="">Tipe Cuti</a>
             @else
-                <a class="nav-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}" href="{{ route('employee.dashboard') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/grid.svg') }}" alt="">Dashboard Saya</a>
-                <a class="nav-link {{ request()->routeIs('employee.profile.*') ? 'active' : '' }}" href="{{ route('employee.profile.edit') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/user-circle.svg') }}" alt="">Profil Saya</a>
-                <a class="nav-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}" href="{{ route('employee.attendance.history') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/time.svg') }}" alt="">Riwayat Absensi</a>
-                <a class="nav-link {{ request()->routeIs('employee.overtime.*') ? 'active' : '' }}" href="{{ route('employee.overtime.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/task.svg') }}" alt="">Lembur Saya</a>
-                <a class="nav-link {{ request()->routeIs('employee.leaves.*') ? 'active' : '' }}" href="{{ route('employee.leaves.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/calender-line.svg') }}" alt="">Cuti Saya</a>
-                <a class="nav-link {{ request()->routeIs('employee.payslip.*') ? 'active' : '' }}" href="{{ route('employee.payslip.index') }}"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/dollar-line.svg') }}" alt="">Slip Gaji</a>
+                <a class="nav-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}" href="{{ route('employee.dashboard') }}" title="Dashboard Saya"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/grid.svg') }}" alt="">Dashboard Saya</a>
+                <a class="nav-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}" href="{{ route('employee.attendance.history') }}" title="Riwayat Absensi"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/time.svg') }}" alt="">Riwayat Absensi</a>
+                <a class="nav-link {{ request()->routeIs('employee.overtime.*') ? 'active' : '' }}" href="{{ route('employee.overtime.index') }}" title="Lembur Saya"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/task.svg') }}" alt="">Lembur Saya</a>
+                <a class="nav-link {{ request()->routeIs('employee.leaves.*') ? 'active' : '' }}" href="{{ route('employee.leaves.index') }}" title="Cuti Saya"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/calender-line.svg') }}" alt="">Cuti Saya</a>
+                <a class="nav-link {{ request()->routeIs('employee.payslip.*') ? 'active' : '' }}" href="{{ route('employee.payslip.index') }}" title="Slip Gaji"><img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/dollar-line.svg') }}" alt="">Slip Gaji</a>
             @endif
         </nav>
     </aside>
     <main class="ta-main">
         <div class="ta-header">
             <div class="d-flex align-items-center gap-3">
-                <button class="ta-mobile-toggle" type="button" data-sidebar-toggle aria-label="Toggle sidebar">
+                <button class="ta-mobile-toggle" type="button" data-sidebar-toggle aria-label="Buka/tutup sidebar" aria-expanded="true">
                     <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1H17M1 7H17M1 13H17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                 </button>
                 <div>
@@ -71,22 +72,48 @@
                 </div>
             </div>
             <div class="ta-header-actions">
-                <span class="badge rounded-pill badge-soft">{{ str_replace('_', ' ', auth()->user()->role ?? '') }}</span>
-                <button type="button" class="btn btn-outline-secondary btn-sm ta-theme-toggle" data-theme-toggle aria-label="Toggle theme">
+                <span class="badge rounded-pill badge-soft">{{ \App\Support\DisplayLabel::role(auth()->user()->role ?? '') }}</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm ta-theme-toggle" data-theme-toggle aria-label="Mode Gelap" title="Mode Gelap">
                     <span class="ta-theme-icon" aria-hidden="true"></span>
-                    <span class="ta-theme-label d-none d-md-inline">Mode Gelap</span>
                 </button>
-                <div class="ta-user">
-                    @php
-                        $employeeAvatar = auth()->user()?->employee?->profile_photo_url ?? asset('tailadmin-nextjs-1.0.0/public/images/user/owner.jpg');
-                    @endphp
-                    <img class="ta-avatar" src="{{ $employeeAvatar }}" alt="User">
-                    <div class="text-end">
-                        <div class="fw-semibold">{{ auth()->user()->name ?? 'Guest' }}</div>
-                        <div class="small text-muted">{{ auth()->user()->email ?? '' }}</div>
+                @php
+                    $currentUser = auth()->user();
+                    $employeeAvatar = $currentUser?->employee?->profile_photo_url ?? asset('tailadmin-nextjs-1.0.0/public/images/user/owner.jpg');
+                @endphp
+                <div class="dropdown ta-user-dropdown">
+                    <button class="ta-user ta-user-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        <img class="ta-avatar" src="{{ $employeeAvatar }}" alt="{{ $currentUser->name ?? 'User' }}">
+                        <span class="ta-user-copy text-end">
+                            <span class="fw-semibold">{{ $currentUser->name ?? 'Guest' }}</span>
+                            <span class="small text-muted">{{ $currentUser->email ?? '' }}</span>
+                        </span>
+                        <img class="ta-user-chevron" src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/chevron-down.svg') }}" alt="">
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end ta-user-menu">
+                        <div class="ta-user-menu-head">
+                            <div class="fw-semibold">{{ $currentUser->name ?? 'Guest' }}</div>
+                            <div class="small text-muted">{{ $currentUser->email ?? '' }}</div>
+                        </div>
+                        @if($currentUser?->isEmployee())
+                            <a class="dropdown-item ta-user-menu-link" href="{{ route('employee.profile.edit') }}">
+                                <img src="{{ asset('tailadmin-nextjs-1.0.0/src/icons/user-circle.svg') }}" alt="">
+                                Edit Profil
+                            </a>
+                        @endif
+                        <div class="dropdown-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button class="dropdown-item ta-user-menu-link text-danger" type="submit">
+                                <svg class="ta-user-menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 17l5-5-5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M20 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                                Keluar
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-outline-secondary btn-sm">Logout</button></form>
             </div>
         </div>
         <section class="ta-content">
@@ -95,6 +122,9 @@
             @if($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif
             @yield('content')
         </section>
+        <footer class="ta-footer">
+            Copyright &copy; <strong>Kelompok 6</strong>. All rights reserved
+        </footer>
     </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
@@ -105,7 +135,6 @@
         if (!btn) return;
 
         const icon = btn.querySelector('.ta-theme-icon');
-        const label = btn.querySelector('.ta-theme-label');
 
         const setChartTheme = (theme) => {
             if (!window.Chart) return;
@@ -123,7 +152,8 @@
                 ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
                 : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 
-            if (label) label.textContent = isDark ? 'Mode Terang' : 'Mode Gelap';
+            btn.setAttribute('aria-label', isDark ? 'Mode Terang' : 'Mode Gelap');
+            btn.setAttribute('title', isDark ? 'Mode Terang' : 'Mode Gelap');
         };
 
         const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';

@@ -8,38 +8,32 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('karyawan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
-            $table->string('employee_id')->unique();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->foreignId('pengguna_id')->unique()->constrained('pengguna')->onDelete('cascade');
+            $table->string('nomor_karyawan')->unique();
+            $table->string('nama_depan');
+            $table->string('nama_belakang');
             $table->string('email')->unique();
-            $table->string('phone')->nullable();
-            $table->date('date_of_birth')->nullable();
-            $table->enum('gender', ['male', 'female'])->nullable();
-            $table->text('address')->nullable();
-            
-            $table->foreignId('department_id')->constrained()->onDelete('restrict');
-            $table->foreignId('position_id')->constrained()->onDelete('restrict');
-            $table->foreignId('shift_time_id')->constrained()->onDelete('restrict');
-            $table->enum('job_role', ['staff', 'mandor'])->default('staff');
-            
-            $table->date('hire_date');
-            $table->date('contract_end_date')->nullable();
-            $table->decimal('salary', 12, 2)->default(0);
-            $table->enum('employment_type', ['permanent', 'contract', 'internship'])->default('permanent');
-            $table->boolean('is_active')->default(true);
+            $table->string('telepon')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->enum('jenis_kelamin', ['male', 'female'])->nullable();
+            $table->text('alamat')->nullable();
+            $table->enum('jabatan', ['staff', 'mandor'])->default('staff');
+
+            $table->date('tanggal_masuk');
+            $table->date('tanggal_selesai_kontrak')->nullable();
+            $table->decimal('tarif_harian', 12, 2)->default(0);
+            $table->enum('tipe_karyawan', ['permanent', 'contract', 'internship'])->default('permanent');
+            $table->boolean('aktif')->default(true);
             
             $table->timestamps();
             $table->softDeletes();
-            
-            $table->index(['employee_id', 'department_id']);
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('karyawan');
     }
 };

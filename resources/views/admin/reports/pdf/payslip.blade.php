@@ -28,18 +28,18 @@
                 <td>
                     <h1>Slip Gaji</h1>
                     <div class="muted">Periode: {{ $payslip->payrollPeriod->name }}</div>
-                    <div class="muted">Tanggal Payroll: {{ $payslip->payroll_date?->format('d M Y') }}</div>
+                    <div class="muted">Tanggal Payroll: {{ $payslip->tanggal_penggajian?->format('d M Y') }}</div>
                 </td>
                 <td class="right">
                     <div class="muted">Dicetak: {{ now()->format('d/m/Y H:i') }}</div>
-                    <div>Status: <strong>{{ strtoupper($payslip->status) }}</strong></div>
+                    <div>Status: <strong>{{ \App\Support\DisplayLabel::statusLabel($payslip->status) }}</strong></div>
                 </td>
             </tr>
         </table>
 
         <h2>Data Karyawan</h2>
         <table class="kv">
-            <tr><td>NIK</td><td>: {{ $payslip->employee->employee_id }}</td></tr>
+            <tr><td>NIK</td><td>: {{ $payslip->employee->karyawan_id }}</td></tr>
             <tr><td>Nama</td><td>: {{ $payslip->employee->full_name }}</td></tr>
             <tr><td>Email</td><td>: {{ $payslip->employee->email }}</td></tr>
         </table>
@@ -53,18 +53,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Gaji Pokok</td><td class="right">Rp {{ number_format($payslip->base_salary, 0, ',', '.') }}</td></tr>
-                <tr><td>Lembur ({{ number_format($payslip->overtime_hours, 2) }} jam)</td><td class="right">Rp {{ number_format($payslip->overtime_amount, 0, ',', '.') }}</td></tr>
-                <tr><td>Potongan</td><td class="right">Rp {{ number_format($payslip->total_deduction, 0, ',', '.') }}</td></tr>
-                <tr><td class="total">Gaji Bersih</td><td class="right total">Rp {{ number_format($payslip->net_salary, 0, ',', '.') }}</td></tr>
+                <tr><td>Gaji Pokok</td><td class="right">Rp {{ number_format($payslip->gaji_pokok, 0, ',', '.') }}</td></tr>
+                <tr><td>Lembur ({{ number_format($payslip->jam_lembur, 2) }} jam)</td><td class="right">Rp {{ number_format($payslip->upah_lembur, 0, ',', '.') }}</td></tr>
+                <tr><td>THR</td><td class="right">Rp {{ number_format($payslip->bonus_thr, 0, ',', '.') }}</td></tr>
+                <tr><td>Potongan Telat ({{ $payslip->total_menit_telat }} menit)</td><td class="right">Rp {{ number_format($payslip->potongan_telat, 0, ',', '.') }}</td></tr>
+                <tr><td>Total Potongan</td><td class="right">Rp {{ number_format($payslip->total_potongan, 0, ',', '.') }}</td></tr>
+                <tr><td class="total">Gaji Bersih</td><td class="right total">Rp {{ number_format($payslip->gaji_bersih, 0, ',', '.') }}</td></tr>
             </tbody>
         </table>
 
-        @if($payslip->notes)
+        @if($payslip->catatan)
             <h2>Catatan</h2>
-            <div>{{ $payslip->notes }}</div>
+            <div>{{ $payslip->catatan }}</div>
         @endif
     </div>
 </body>
 </html>
-

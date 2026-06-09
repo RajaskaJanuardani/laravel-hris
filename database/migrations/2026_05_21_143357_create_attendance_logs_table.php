@@ -8,28 +8,28 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('attendance_logs', function (Blueprint $table) {
+        Schema::create('log_absensi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('rfid_card_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('karyawan_id')->nullable()->constrained('karyawan')->onDelete('set null');
+            $table->foreignId('kartu_rfid_id')->nullable()->constrained('kartu_rfid')->onDelete('set null');
             $table->string('uid');
-            $table->string('source')->default('simulator');
-            $table->string('device_name')->nullable();
-            $table->ipAddress('ip_address')->nullable();
-            $table->enum('scan_type', ['check_in', 'check_out', 'unknown'])->default('unknown');
+            $table->string('sumber')->default('simulator');
+            $table->string('nama_perangkat')->nullable();
+            $table->ipAddress('alamat_ip')->nullable();
+            $table->enum('tipe_scan', ['check_in', 'check_out', 'unknown'])->default('unknown');
             $table->enum('status', ['success', 'failed'])->default('failed');
-            $table->string('message')->nullable();
-            $table->timestamp('scanned_at')->useCurrent();
-            $table->json('payload')->nullable();
+            $table->string('pesan')->nullable();
+            $table->timestamp('dipindai_pada')->useCurrent();
+            $table->json('data_payload')->nullable();
             $table->timestamps();
 
-            $table->index(['uid', 'scanned_at']);
-            $table->index(['status', 'scan_type']);
+            $table->index(['uid', 'dipindai_pada']);
+            $table->index(['status', 'tipe_scan']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('attendance_logs');
+        Schema::dropIfExists('log_absensi');
     }
 };

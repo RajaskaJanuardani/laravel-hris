@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('system_settings', function (Blueprint $table) {
+        Schema::create('pengaturan_sistem', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->longText('value')->nullable();
-            $table->string('type')->default('string'); // string, integer, decimal, boolean, json
-            $table->text('description')->nullable();
+            $table->string('kunci')->unique();
+            $table->longText('nilai')->nullable();
+            $table->string('tipe')->default('string'); // string, integer, decimal, boolean, json
+            $table->text('deskripsi')->nullable();
             $table->timestamps();
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('system_settings');
+        Schema::dropIfExists('pengaturan_sistem');
     }
 };

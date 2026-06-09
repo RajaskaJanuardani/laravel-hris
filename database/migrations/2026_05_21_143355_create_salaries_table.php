@@ -8,25 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('salaries', function (Blueprint $table) {
+        Schema::create('gaji', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
-            $table->decimal('base_salary', 12, 2);
-            $table->decimal('total_income', 12, 2)->default(0);
-            $table->decimal('total_deduction', 12, 2)->default(0);
-            $table->decimal('net_salary', 12, 2)->default(0);
-            $table->date('effective_date');
-            $table->date('end_date')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
+            $table->decimal('gaji_pokok', 12, 2);
+            $table->decimal('total_pendapatan', 12, 2)->default(0);
+            $table->decimal('total_potongan', 12, 2)->default(0);
+            $table->decimal('gaji_bersih', 12, 2)->default(0);
+            $table->date('tanggal_berlaku');
+            $table->date('tanggal_selesai')->nullable();
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['employee_id', 'effective_date']);
+            $table->index(['karyawan_id', 'tanggal_berlaku']);
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('salaries');
+        Schema::dropIfExists('gaji');
     }
 };

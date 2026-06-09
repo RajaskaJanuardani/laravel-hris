@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Payslip;
+use App\Support\DisplayLabel;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -22,9 +23,9 @@ class PayrollExport implements FromCollection, WithHeadings, WithMapping
     {
         return Payslip::query()
             ->with(['employee', 'payrollPeriod'])
-            ->whereBetween('payroll_date', [$this->from->toDateString(), $this->to->toDateString()])
-            ->when($this->periodId, fn ($q) => $q->where('payroll_period_id', $this->periodId))
-            ->latest('payroll_date')
+            ->whereBetween('tanggal_penggajian', [$this->from->toDateString(), $this->to->toDateString()])
+            ->when($this->periodId, fn ($q) => $q->where('periode_penggajian_id', $this->periodId))
+            ->latest('tanggal_penggajian')
             ->get();
     }
 
@@ -48,16 +49,15 @@ class PayrollExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             $row->payrollPeriod?->name,
-            $row->payroll_date?->format('Y-m-d'),
-            $row->employee?->employee_id,
+            $row->tanggal_penggajian?->format('Y-m-d'),
+            $row->employee?->karyawan_id,
             $row->employee?->full_name,
-            (float) $row->base_salary,
-            (float) $row->overtime_hours,
-            (float) $row->overtime_amount,
-            (float) $row->total_deduction,
-            (float) $row->net_salary,
-            $row->status,
+            (float) $row->gaji_pokok,
+            (float) $row->jam_lembur,
+            (float) $row->upah_lembur,
+            (float) $row->total_potongan,
+            (float) $row->gaji_bersih,
+            DisplayLabel::statusLabel($row->status),
         ];
     }
 }
-

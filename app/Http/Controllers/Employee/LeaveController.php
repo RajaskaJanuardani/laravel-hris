@@ -25,18 +25,18 @@ class LeaveController extends Controller
         abort_unless($employee, 422, 'Profil karyawan belum tersedia.');
 
         $data = $request->validate([
-            'leave_type_id' => ['required', 'exists:leave_types,id'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'reason' => ['nullable', 'string'],
+            'jenis_cuti_id' => ['required', 'exists:jenis_cuti,id'],
+            'tanggal_mulai' => ['required', 'date'],
+            'tanggal_selesai' => ['required', 'date', 'after_or_equal:tanggal_mulai'],
+            'alasan' => ['nullable', 'string'],
         ]);
 
-        $start = \Carbon\Carbon::parse($data['start_date']);
-        $end = \Carbon\Carbon::parse($data['end_date']);
+        $start = \Carbon\Carbon::parse($data['tanggal_mulai']);
+        $end = \Carbon\Carbon::parse($data['tanggal_selesai']);
 
         Leave::create($data + [
-            'employee_id' => $employee->id,
-            'number_of_days' => $start->diffInDays($end) + 1,
+            'karyawan_id' => $employee->id,
+            'jumlah_hari' => $start->diffInDays($end) + 1,
             'status' => 'pending',
         ]);
 

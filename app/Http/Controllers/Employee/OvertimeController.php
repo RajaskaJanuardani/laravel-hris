@@ -16,17 +16,17 @@ class OvertimeController extends Controller
         return view('employee.overtime.index', [
             'overtimeApprovals' => $employee->overtimeApprovals()
                 ->with('approvedBy')
-                ->latest('overtime_date')
+                ->latest('tanggal_lembur')
                 ->paginate(10),
             'approvedOvertimeThisMonth' => OvertimeApproval::approved()
-                ->where('employee_id', $employee->id)
-                ->whereMonth('overtime_date', now()->month)
-                ->whereYear('overtime_date', now()->year)
+                ->where('karyawan_id', $employee->id)
+                ->whereMonth('tanggal_lembur', now()->month)
+                ->whereYear('tanggal_lembur', now()->year)
                 ->count(),
             'nextOvertime' => OvertimeApproval::approved()
-                ->where('employee_id', $employee->id)
-                ->whereDate('overtime_date', '>=', today())
-                ->orderBy('overtime_date')
+                ->where('karyawan_id', $employee->id)
+                ->whereDate('tanggal_lembur', '>=', today())
+                ->orderBy('tanggal_lembur')
                 ->first(),
         ]);
     }

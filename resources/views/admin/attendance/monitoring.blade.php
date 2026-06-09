@@ -13,10 +13,38 @@
         </form>
     </div>
     <div class="col-lg-8">
-        <div class="card p-4">
-            <h2 class="h5">Log Scan Terbaru</h2>
-            <table class="table align-middle"><thead><tr><th>Waktu</th><th>UID</th><th>Karyawan</th><th>Tipe</th><th>Status</th></tr></thead>
-            <tbody>@forelse($logs as $log)<tr><td>{{ $log->scanned_at->format('H:i:s d/m') }}</td><td>{{ $log->uid }}</td><td>{{ $log->employee->full_name ?? '-' }}</td><td>{{ $log->scan_type }}</td><td><span class="badge {{ $log->status==='success'?'text-bg-success':'text-bg-danger' }}">{{ $log->message }}</span></td></tr>@empty<tr><td colspan="5" class="text-muted">Belum ada log.</td></tr>@endforelse</tbody></table>
+        <div class="card overflow-hidden">
+            <div class="p-4 border-bottom">
+                <h2 class="h5 mb-1">Log Scan Terbaru</h2>
+                <div class="text-muted small">Aktivitas scan RFID yang baru masuk ke sistem.</div>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Waktu</th>
+                            <th>UID</th>
+                            <th>Karyawan</th>
+                            <th>Tipe</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @forelse($logs as $log)
+                        @php($status = \App\Support\DisplayLabel::status($log->status))
+                        <tr>
+                            <td><span class="ta-code-chip">{{ $log->dipindai_pada->format('H:i:s d/m') }}</span></td>
+                            <td><span class="ta-code-chip">{{ $log->uid }}</span></td>
+                            <td>@include('shared._employee_table_cell', ['employee' => $log->employee, 'name' => $log->employee?->full_name ?? '-'])</td>
+                            <td>{{ \App\Support\DisplayLabel::scanType($log->tipe_scan) }}</td>
+                            <td><span class="badge text-bg-{{ $status['badge'] }}">{{ $log->message }}</span></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="ta-table-empty">Belum ada log.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

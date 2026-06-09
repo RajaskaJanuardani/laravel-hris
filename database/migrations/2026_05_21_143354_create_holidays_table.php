@@ -8,22 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('holidays', function (Blueprint $table) {
+        Schema::create('hari_libur', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->date('date');
-            $table->text('description')->nullable();
-            $table->boolean('is_annual')->default(false); // Libur nasional tahunan
+            $table->string('nama');
+            $table->date('tanggal');
+            $table->text('deskripsi')->nullable();
+            $table->boolean('tahunan')->default(false); // Libur nasional tahunan
             $table->timestamps();
             $table->softDeletes();
             
-            $table->unique('date');
+            $table->unique('tanggal');
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('holidays');
+        Schema::dropIfExists('hari_libur');
     }
 };
  

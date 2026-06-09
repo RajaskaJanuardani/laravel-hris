@@ -8,27 +8,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('leaves', function (Blueprint $table) {
+        Schema::create('cuti', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
-            $table->foreignId('leave_type_id')->constrained()->onDelete('restrict');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->integer('number_of_days');
-            $table->text('reason')->nullable();
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
+            $table->foreignId('jenis_cuti_id')->constrained('jenis_cuti')->onDelete('restrict');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->integer('jumlah_hari');
+            $table->text('alasan')->nullable();
             $table->enum('status', ['draft', 'pending', 'approved', 'rejected'])->default('pending');
-            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('approved_at')->nullable();
-            $table->text('approval_notes')->nullable();
+            $table->foreignId('disetujui_oleh')->nullable()->constrained('pengguna')->onDelete('set null');
+            $table->timestamp('disetujui_pada')->nullable();
+            $table->text('catatan_persetujuan')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['employee_id', 'status']);
+            $table->index(['karyawan_id', 'status']);
         });
     }
  
     public function down(): void
     {
-        Schema::dropIfExists('leaves');
+        Schema::dropIfExists('cuti');
     }
 };

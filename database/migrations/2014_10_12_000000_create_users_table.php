@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
 {
-    Schema::create('users', function (Blueprint $table) {
+    Schema::create('pengguna', function (Blueprint $table) {
         $table->id();
-        $table->string('name');
+        $table->string('nama');
         $table->string('email')->unique();
-        $table->timestamp('email_verified_at')->nullable();
-        $table->string('password');
-        $table->enum('role', ['admin', 'employee'])
+        $table->timestamp('email_diverifikasi_pada')->nullable();
+        $table->string('kata_sandi');
+        $table->enum('peran', ['admin', 'employee'])
                 ->default('employee');
 
-        $table->boolean('is_active')->default(true);
-        $table->rememberToken();
+        $table->boolean('aktif')->default(true);
+        $table->string('token_ingat', 100)->nullable();
         $table->timestamps();
         $table->softDeletes();
     });
@@ -29,6 +29,6 @@ return new class extends Migration
 
 public function down(): void
 {
-    Schema::dropIfExists('users');
+    Schema::dropIfExists('pengguna');
 }
 };

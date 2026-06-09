@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\AttendanceLog;
+use App\Support\DisplayLabel;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -23,10 +24,10 @@ class RFIDAuditExport implements FromCollection, WithHeadings, WithMapping
     {
         return AttendanceLog::query()
             ->with('employee')
-            ->whereBetween('scanned_at', [$this->from->startOfDay(), $this->to->endOfDay()])
+            ->whereBetween('dipindai_pada', [$this->from->startOfDay(), $this->to->endOfDay()])
             ->when($this->status, fn ($q) => $q->where('status', $this->status))
-            ->when($this->source, fn ($q) => $q->where('source', $this->source))
-            ->latest('scanned_at')
+            ->when($this->source, fn ($q) => $q->where('sumber', $this->source))
+            ->latest('dipindai_pada')
             ->get();
     }
 
@@ -37,29 +38,28 @@ class RFIDAuditExport implements FromCollection, WithHeadings, WithMapping
             'NIK',
             'Nama',
             'UID',
-            'Source',
-            'Device',
+            'Sumber',
+            'Perangkat',
             'IP',
-            'Type',
+            'Tipe',
             'Status',
-            'Message',
+            'Pesan',
         ];
     }
 
     public function map($row): array
     {
         return [
-            $row->scanned_at?->format('Y-m-d H:i:s'),
-            $row->employee?->employee_id,
+            $row->dipindai_pada?->format('Y-m-d H:i:s'),
+            $row->employee?->karyawan_id,
             $row->employee?->full_name,
             $row->uid,
             $row->source,
-            $row->device_name,
-            $row->ip_address,
-            $row->scan_type,
-            $row->status,
+            $row->nama_perangkat,
+            $row->alamat_ip,
+            DisplayLabel::scanType($row->tipe_scan),
+            DisplayLabel::statusLabel($row->status),
             $row->message,
         ];
     }
 }
-

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Attendance;
+use App\Support\DisplayLabel;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -22,8 +23,8 @@ class AttendanceDailyExport implements FromCollection, WithHeadings, WithMapping
     {
         return Attendance::query()
             ->with(['employee'])
-            ->whereDate('attendance_date', $this->date)
-            ->orderBy('attendance_date')
+            ->whereDate('tanggal_absensi', $this->date)
+            ->orderBy('tanggal_absensi')
             ->get();
     }
 
@@ -44,14 +45,14 @@ class AttendanceDailyExport implements FromCollection, WithHeadings, WithMapping
     public function map($row): array
     {
         return [
-            $row->attendance_date?->format('Y-m-d'),
-            $row->employee?->employee_id,
+            $row->tanggal_absensi?->format('Y-m-d'),
+            $row->employee?->karyawan_id,
             $row->employee?->full_name,
-            $row->check_in_time?->format('H:i'),
-            $row->check_out_time?->format('H:i'),
-            $row->status,
-            (int) $row->late_minutes,
-            (float) $row->overtime_hours,
+            $row->jam_masuk?->format('H:i'),
+            $row->jam_pulang?->format('H:i'),
+            DisplayLabel::statusLabel($row->status),
+            (int) $row->menit_telat,
+            (float) $row->jam_lembur,
         ];
     }
 }
