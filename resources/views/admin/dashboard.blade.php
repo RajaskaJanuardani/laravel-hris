@@ -316,7 +316,7 @@
         ['label' => 'Tidak Hadir', 'value' => $absentToday, 'note' => 'Tidak masuk hari ini', 'icon' => 'x', 'color' => '#ef4444', 'url' => route('admin.attendance.index', ['date' => $todayQuery, 'status' => 'tidak_hadir'])],
         ['label' => 'Cuti Aktif', 'value' => $leaveToday, 'note' => 'Sedang cuti/izin', 'icon' => 'calendar', 'color' => '#14b8a6', 'url' => route('admin.leaves.index', ['aktif' => 1])],
         ['label' => 'Cuti Menunggu', 'value' => $pendingLeaves, 'note' => 'Menunggu persetujuan', 'icon' => 'file', 'color' => '#8b5cf6', 'url' => route('admin.leaves.index', ['status' => 'pending'])],
-        ['label' => 'Lembur Hari Ini', 'value' => $overtimeToday, 'note' => 'Approval aktif hari ini', 'icon' => 'bolt', 'color' => '#ec4899', 'url' => route('admin.overtime.index', ['date' => $todayQuery])],
+        ['label' => 'Lembur Hari Ini', 'value' => $overtimeToday, 'note' => 'Jadwal lembur hari ini', 'icon' => 'bolt', 'color' => '#ec4899', 'url' => route('admin.overtime.index', ['date' => $todayQuery])],
     ];
     $totalJobRoles = max(1, $jobRoleStats->sum());
 @endphp

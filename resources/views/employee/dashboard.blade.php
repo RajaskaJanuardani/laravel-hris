@@ -430,13 +430,13 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                         <div>
-                            <h2 class="h5 mb-1">Approval Lembur</h2>
-                            <p class="text-muted small mb-0">Jadwal lembur terbaru.</p>
+                            <h2 class="h5 mb-1">Jadwal Lembur</h2>
+                            <p class="text-muted small mb-0">Informasi lembur dari admin.</p>
                         </div>
                         <a class="btn btn-outline-secondary btn-sm" href="{{ route('employee.overtime.index') }}">Semua</a>
                     </div>
                     @forelse($overtimeApprovals as $approval)
-                        @php($status = \App\Support\DisplayLabel::status($approval->status))
+                        @php($status = \App\Support\DisplayLabel::overtimeStatus($approval->status))
                         <div class="compact-row">
                             <div class="d-flex justify-content-between align-items-start gap-3">
                                 <div>
@@ -447,7 +447,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="empty-state">Belum ada approval lembur.</div>
+                        <div class="empty-state">Belum ada jadwal lembur.</div>
                     @endforelse
                 </div>
             </div>

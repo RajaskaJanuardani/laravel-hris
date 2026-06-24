@@ -1,5 +1,9 @@
 @extends('layouts.app', ['heading' => 'Generate Payroll'])
 @section('content')
+@php
+    $today = now();
+    $defaultEndDate = $today->copy()->addDays(13);
+@endphp
 <div class="row g-4">
     <div class="col-xl-8">
         <form class="card p-4" method="POST" action="{{ route('admin.payroll.store') }}">
@@ -15,15 +19,15 @@
             <div class="row g-3">
                 <div class="col-md-12">
                     <label class="form-label">Nama Periode</label>
-                    <input class="form-control" name="name" value="{{ 'Payroll '.now()->format('d M').' - '.now()->copy()->addDays(13)->format('d M Y') }}" required>
+                    <input class="form-control" name="name" value="{{ old('name', 'Payroll '.$today->format('d M').' - '.$defaultEndDate->format('d M Y')) }}" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Tanggal Mulai</label>
-                    <input class="form-control" type="date" name="tanggal_mulai" value="{{ now()->format('Y-m-d') }}" required>
+                    <input class="form-control" type="date" name="tanggal_mulai" value="{{ old('tanggal_mulai', $today->format('Y-m-d')) }}" min="{{ $today->format('Y-m-d') }}" required data-payroll-start>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Tanggal Selesai</label>
-                    <input class="form-control" type="date" name="tanggal_selesai" value="{{ now()->copy()->addDays(13)->format('Y-m-d') }}" required>
+                    <input class="form-control" type="date" name="tanggal_selesai" value="{{ old('tanggal_selesai', $defaultEndDate->format('Y-m-d')) }}" min="{{ $today->format('Y-m-d') }}" required data-payroll-end>
                 </div>
                 <div class="col-md-12">
                     <div class="border rounded-3 p-3">
@@ -66,3 +70,41 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    (() => {
+        const startInput = document.querySelector('[data-payroll-start]');
+        const endInput = document.querySelector('[data-payroll-end]');
+        if (!startInput || !endInput) return;
+
+        const today = startInput.min;
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        const addDays = (dateValue, days) => {
+            const [year, month, day] = dateValue.split('-').map(Number);
+            const date = new Date(year, month - 1, day);
+            date.setDate(date.getDate() + days);
+            return formatDate(date);
+        };
+
+        const syncPayrollDateLimits = () => {
+            const startDate = startInput.value && startInput.value > today ? startInput.value : today;
+
+            endInput.min = startDate;
+            endInput.max = addDays(startDate, 13);
+
+            if (!endInput.value || endInput.value < endInput.min || endInput.value > endInput.max) {
+                endInput.value = endInput.max;
+            }
+        };
+
+        startInput.addEventListener('change', syncPayrollDateLimits);
+        syncPayrollDateLimits();
+    })();
+</script>
+@endpush

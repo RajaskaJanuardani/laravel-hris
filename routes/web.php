@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
     Route::get('/payroll/create', [PayrollController::class, 'create'])->name('payroll.create');
     Route::post('/payroll', [PayrollController::class, 'store'])->name('payroll.store');
+    Route::patch('/payroll/periods/{period}/paid', [PayrollController::class, 'markPeriodAsPaid'])->name('payroll.periods.paid');
     Route::get('/payslips', [PayrollController::class, 'payslips'])->name('payroll.payslips');
     Route::get('/settings/leave-types', [LeaveTypeController::class, 'index'])->name('settings.leave-types');
     Route::post('/settings/leave-types', [LeaveTypeController::class, 'store'])->name('settings.leave-types.store');

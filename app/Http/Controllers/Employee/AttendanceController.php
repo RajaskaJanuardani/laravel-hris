@@ -32,8 +32,8 @@ class AttendanceController extends Controller
             ? $employee->absensi()->latest('tanggal_absensi')->get()
             : collect();
 
-        if ($employee && ! $rows->contains(fn ($attendance) => $attendance->tanggal_absensi->isSameDay($today))) {
-            $rows->prepend($this->virtualAbsentAttendance($employee, $today));
+        if ($employee) {
+            $rows = $this->withCurrentMonthCalendar($employee, $rows, Carbon::parse($today));
         }
 
         $absensi = $this->paginateRows(
@@ -51,6 +51,33 @@ class AttendanceController extends Controller
     public function checkIn()
     {
         return view('employee.attendance.check-in', ['employee' => auth()->user()->employee]);
+    }
+
+    private function withCurrentMonthCalendar(Employee $employee, $rows, Carbon $today)
+    {
+        $items = collect($rows);
+        $startDate = $today->copy()->startOfMonth();
+
+        if ($employee->tanggal_masuk && $employee->tanggal_masuk->greaterThan($startDate)) {
+            $startDate = $employee->tanggal_masuk->copy();
+        }
+
+        if ($startDate->greaterThan($today)) {
+            return $items;
+        }
+
+        $rowsByDate = $items->keyBy(fn ($attendance) => $attendance->tanggal_absensi->toDateString());
+        $calendarRows = collect();
+
+        for ($date = $today->copy(); $date->greaterThanOrEqualTo($startDate); $date->subDay()) {
+            $key = $date->toDateString();
+
+            $calendarRows->push($rowsByDate->get($key) ?? $this->virtualAbsentAttendance($employee, $key));
+        }
+
+        $olderRows = $items->filter(fn ($attendance) => $attendance->tanggal_absensi->lessThan($startDate));
+
+        return $calendarRows->merge($olderRows)->values();
     }
 
     private function virtualAbsentAttendance(Employee $employee, string $date): object

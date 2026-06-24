@@ -12,20 +12,94 @@ use Illuminate\Http\Request;
 
 class PayrollController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = trim((string) $request->query('q', ''));
+        $statusFilter = $request->query('status');
+        $periodStatuses = ['draft', 'paid'];
+
+        if (! in_array($statusFilter, $periodStatuses, true)) {
+            $statusFilter = null;
+        }
+
         $summary = [
             'total_slip' => Payslip::count(),
             'total_gaji_bersih' => Payslip::sum('gaji_bersih'),
             'total_thr' => Payslip::sum('bonus_thr'),
             'draft' => Payslip::where('status', 'draft')->count(),
+            'total_periode' => PayrollPeriod::count(),
         ];
 
+        $periods = PayrollPeriod::query()
+            ->withCount([
+                'slip_gaji',
+                'slip_gaji as draft_slip_count' => fn ($query) => $query->where('status', 'draft'),
+                'slip_gaji as paid_slip_count' => fn ($query) => $query->where('status', 'paid'),
+            ])
+            ->withSum('slip_gaji as total_gaji_bersih', 'gaji_bersih')
+            ->when($search !== '', fn ($query) => $this->applyPeriodSearchWithEmployee($query, $search))
+            ->when($statusFilter, fn ($query) => $query->where('status', $statusFilter))
+            ->latest('tanggal_mulai')
+            ->latest()
+            ->paginate(6, ['*'], 'periode_page')
+            ->withQueryString();
+
+        $slipGaji = Payslip::query()
+            ->with(['employee', 'payrollPeriod'])
+            ->when($search !== '', function ($query) use ($search): void {
+                $like = "%{$search}%";
+
+                $query->where(function ($query) use ($like, $search): void {
+                    $query->whereHas('payrollPeriod', fn ($period) => $this->applyPeriodSearch($period, $search))
+                        ->orWhereHas('employee', function ($employee) use ($like): void {
+                            $employee->where('nomor_karyawan', 'like', $like)
+                                ->orWhere('nama_depan', 'like', $like)
+                                ->orWhere('nama_belakang', 'like', $like)
+                                ->orWhere('email', 'like', $like);
+                        });
+                });
+            })
+            ->when($statusFilter, fn ($query) => $query->whereHas('payrollPeriod', fn ($period) => $period->where('status', $statusFilter)))
+            ->latest('tanggal_penggajian')
+            ->latest()
+            ->paginate(12, ['*'], 'slip_page')
+            ->withQueryString();
+
         return view('admin.payroll.index', [
-            'periods' => PayrollPeriod::latest()->get(),
-            'slip_gaji' => Payslip::with(['employee', 'payrollPeriod'])->latest()->paginate(12),
+            'periods' => $periods,
+            'slip_gaji' => $slipGaji,
             'summary' => $summary,
+            'search' => $search,
+            'statusFilter' => $statusFilter,
+            'periodStatuses' => $periodStatuses,
         ]);
+    }
+
+    public function markPeriodAsPaid(PayrollPeriod $period)
+    {
+        if ($period->status === 'paid') {
+            return back()->with('success', 'Periode payroll sudah berstatus dibayar.');
+        }
+
+        if ($period->status !== 'draft') {
+            return back()->with('error', 'Hanya periode payroll berstatus draf yang bisa ditandai dibayar.');
+        }
+
+        $paidAt = now();
+        $paidSlipCount = $period->slip_gaji()
+            ->whereIn('status', ['draft', 'final'])
+            ->update([
+                'status' => 'paid',
+                'dibayar_pada' => $paidAt,
+                'updated_at' => $paidAt,
+            ]);
+
+        $period->update([
+            'status' => 'paid',
+            'tanggal_penggajian' => $paidAt,
+        ]);
+
+        return back()->with('success', "Periode {$period->name} berhasil ditandai dibayar untuk {$paidSlipCount} slip.");
     }
 
     public function create()
@@ -35,11 +109,23 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
+        $today = today()->toDateString();
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100', 'unique:periode_penggajian,nama'],
-            'tanggal_mulai' => ['required', 'date'],
-            'tanggal_selesai' => ['required', 'date', 'after_or_equal:tanggal_mulai'],
+            'tanggal_mulai' => ['required', 'date_format:Y-m-d', 'after_or_equal:'.$today],
+            'tanggal_selesai' => ['required', 'date_format:Y-m-d', 'after_or_equal:tanggal_mulai'],
             'include_thr' => ['nullable', 'boolean'],
+        ], [
+            'tanggal_mulai.after_or_equal' => 'Tanggal mulai payroll tidak boleh sebelum hari ini.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal selesai payroll harus sama atau setelah tanggal mulai.',
+            'tanggal_mulai.date_format' => 'Format tanggal mulai tidak valid.',
+            'tanggal_selesai.date_format' => 'Format tanggal selesai tidak valid.',
+        ], [
+            'name' => 'nama periode',
+            'tanggal_mulai' => 'tanggal mulai',
+            'tanggal_selesai' => 'tanggal selesai',
+            'include_thr' => 'THR',
         ]);
 
         $start = Carbon::parse($data['tanggal_mulai']);
@@ -110,5 +196,34 @@ class PayrollController extends Controller
         return view('admin.payroll.payslips', [
             'slip_gaji' => Payslip::with(['employee', 'payrollPeriod'])->latest()->paginate(15),
         ]);
+    }
+
+    private function applyPeriodSearch($query, string $search)
+    {
+        $like = "%{$search}%";
+
+        return $query->where(function ($query) use ($like): void {
+            $query->where('nama', 'like', $like)
+                ->orWhere('tanggal_mulai', 'like', $like)
+                ->orWhere('tanggal_selesai', 'like', $like)
+                ->orWhere('tanggal_penggajian', 'like', $like)
+                ->orWhere('status', 'like', $like);
+        });
+    }
+
+    private function applyPeriodSearchWithEmployee($query, string $search)
+    {
+        $like = "%{$search}%";
+
+        return $query->where(function ($query) use ($like, $search): void {
+            $this->applyPeriodSearch($query, $search);
+
+            $query->orWhereHas('slip_gaji.employee', function ($employee) use ($like): void {
+                $employee->where('nomor_karyawan', 'like', $like)
+                    ->orWhere('nama_depan', 'like', $like)
+                    ->orWhere('nama_belakang', 'like', $like)
+                    ->orWhere('email', 'like', $like);
+            });
+        });
     }
 }

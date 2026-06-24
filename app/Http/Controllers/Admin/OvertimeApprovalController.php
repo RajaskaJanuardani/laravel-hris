@@ -48,13 +48,13 @@ class OvertimeApprovalController extends Controller
             ]
         );
 
-        return back()->with('success', 'Approval lembur berhasil disimpan.');
+        return back()->with('success', 'Lembur berhasil ditetapkan.');
     }
 
     public function destroy(OvertimeApproval $overtime)
     {
         $overtime->update(['status' => 'cancelled']);
 
-        return back()->with('success', 'Approval lembur dibatalkan.');
+        return back()->with('success', 'Lembur dibatalkan.');
     }
 }

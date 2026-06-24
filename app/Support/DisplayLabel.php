@@ -51,6 +51,11 @@ class DisplayLabel
         'unknown' => 'Ditolak',
     ];
 
+    private const OVERTIME_STATUSES = [
+        'approved' => ['label' => 'Ditetapkan', 'badge' => 'success'],
+        'cancelled' => ['label' => 'Dibatalkan', 'badge' => 'secondary'],
+    ];
+
     public static function status(?string $status): array
     {
         $key = self::key($status);
@@ -69,6 +74,18 @@ class DisplayLabel
     public static function statusBadge(?string $status): string
     {
         return self::status($status)['badge'];
+    }
+
+    public static function overtimeStatus(?string $status): array
+    {
+        $key = self::key($status);
+
+        return self::OVERTIME_STATUSES[$key] ?? self::status($status);
+    }
+
+    public static function overtimeStatusLabel(?string $status): string
+    {
+        return self::overtimeStatus($status)['label'];
     }
 
     public static function role(?string $role): string

@@ -168,7 +168,7 @@
         ['Absensi Harian','admin.reports.attendance.daily','Rekap kehadiran per tanggal: masuk, pulang, telat, lembur.','time.svg','#465fff'],
         ['Rekap Absensi (Periode)','admin.reports.attendance.recap','Ringkasan per karyawan pada periode tertentu.','table.svg','#14b8a6'],
         ['Ranking Telat','admin.reports.late-ranking','Urutan karyawan paling sering telat pada periode.','arrow-up.svg','#f59e0b'],
-        ['Laporan Lembur','admin.reports.overtime','Daftar approval lembur dan detail jam lembur.','task.svg','#8b5cf6'],
+        ['Laporan Lembur','admin.reports.overtime','Daftar penugasan lembur dan detail jam lembur.','task.svg','#8b5cf6'],
         ['Laporan Cuti/Izin','admin.reports.leaves','Pengajuan cuti/izin per periode dan statusnya.','calender-line.svg','#06b6d4'],
         ['Laporan Payroll','admin.reports.payroll','Rekap slip gaji per periode payroll.','dollar-line.svg','#22c55e'],
         ['Audit Scan RFID','admin.reports.rfid-audit','Log scan RFID: berhasil/gagal, device, IP, waktu.','docs.svg','#ef4444'],

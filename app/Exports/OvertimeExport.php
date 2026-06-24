@@ -38,7 +38,7 @@ class OvertimeExport implements FromCollection, WithHeadings, WithMapping
             'Jam Mulai',
             'Jam Selesai',
             'Catatan',
-            'Disetujui Oleh',
+            'Ditetapkan Oleh',
         ];
     }
 

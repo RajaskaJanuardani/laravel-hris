@@ -26,7 +26,7 @@
 <div class="card overflow-hidden">
     <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
         <div>
-            <h2 class="h5 mb-1">Approval Lembur</h2>
+            <h2 class="h5 mb-1">Data Lembur</h2>
             <div class="text-muted small">{{ $from->translatedFormat('d M Y') }} - {{ $to->translatedFormat('d M Y') }}</div>
         </div>
         <div>
@@ -35,7 +35,7 @@
     </div>
     <div class="table-responsive">
         <table class="table align-middle">
-            <thead><tr><th>Tanggal</th><th>Karyawan</th><th>Jam</th><th>Catatan</th><th>Disetujui Oleh</th></tr></thead>
+            <thead><tr><th>Tanggal</th><th>Karyawan</th><th>Jam</th><th>Catatan</th><th>Ditetapkan Oleh</th></tr></thead>
             <tbody>
             @forelse($rows as $row)
                 <tr>

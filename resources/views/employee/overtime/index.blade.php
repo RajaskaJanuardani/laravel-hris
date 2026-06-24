@@ -1,4 +1,4 @@
-@extends('layouts.app', ['heading' => 'Lembur Saya'])
+@extends('layouts.app', ['heading' => 'Jadwal Lembur'])
 @section('content')
 <style>
     .employee-overtime-page .overtime-summary {
@@ -119,7 +119,7 @@
 @php
     $nextOvertimeDate = $nextOvertime?->tanggal_lembur?->format('d M') ?? '-';
     $nextOvertimeTime = $nextOvertime ? '17:00 - '.($nextOvertime->jam_selesai?->format('H:i') ?? '-') : 'Belum ada jadwal';
-    $latestStatus = $nextOvertime ? \App\Support\DisplayLabel::statusLabel($nextOvertime->status) : 'Belum ada';
+    $latestStatus = $nextOvertime ? \App\Support\DisplayLabel::overtimeStatusLabel($nextOvertime->status) : 'Belum ada';
 @endphp
 
 <div class="employee-overtime-page">
@@ -127,9 +127,9 @@
     <div class="overtime-metric" style="--metric-color:#465fff;">
         <div class="overtime-metric-head">
             <div>
-                <div class="overtime-metric-label">Lembur Disetujui Bulan Ini</div>
+                <div class="overtime-metric-label">Lembur Bulan Ini</div>
                 <div class="overtime-metric-value">{{ $approvedOvertimeThisMonth }}</div>
-                <div class="overtime-metric-note">Approval lembur aktif bulan berjalan</div>
+                <div class="overtime-metric-note">Jadwal lembur yang ditetapkan admin</div>
             </div>
             <span class="overtime-metric-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M8 12.5 10.8 15 16 8.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.9"/></svg>
@@ -155,7 +155,7 @@
             <div>
                 <div class="overtime-metric-label">Status Terakhir</div>
                 <div class="overtime-metric-value">{{ $latestStatus }}</div>
-                <div class="overtime-metric-note">Status dari approval terbaru</div>
+                <div class="overtime-metric-note">Status dari jadwal lembur terbaru</div>
             </div>
             <span class="overtime-metric-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M12 16.5h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M10.3 4.5 2.8 17.2A2 2 0 0 0 4.5 20h15a2 2 0 0 0 1.7-2.8L13.7 4.5a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
@@ -165,8 +165,8 @@
 </div>
 <div class="card overflow-hidden">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 p-4 border-bottom">
-        <h2 class="h5 mb-0">Riwayat Approval Lembur</h2>
-        <span class="text-muted small">Lembur yang disetujui admin akan muncul di sini.</span>
+        <h2 class="h5 mb-0">Riwayat Lembur</h2>
+        <span class="text-muted small">Jadwal lembur dari admin akan muncul di sini.</span>
     </div>
     <div class="table-responsive">
         <table class="table align-middle">
@@ -176,12 +176,12 @@
                     <th>Jam</th>
                     <th>Status</th>
                     <th>Catatan</th>
-                    <th>Disetujui Oleh</th>
+                    <th>Ditetapkan Oleh</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($overtimeApprovals as $approval)
-                    @php($status = \App\Support\DisplayLabel::status($approval->status))
+                    @php($status = \App\Support\DisplayLabel::overtimeStatus($approval->status))
                     <tr>
                         <td><span class="ta-code-chip">{{ $approval->tanggal_lembur->format('d M Y') }}</span></td>
                         <td><span class="ta-time-pill">17:00 - {{ $approval->jam_selesai->format('H:i') }}</span></td>
@@ -190,12 +190,12 @@
                         <td>{{ $approval->approvedBy?->name ?? '-' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="ta-table-empty">Belum ada approval lembur.</td></tr>
+                    <tr><td colspan="5" class="ta-table-empty">Belum ada jadwal lembur.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    @include('shared._pagination', ['paginator' => $overtimeApprovals, 'label' => 'approval'])
+    @include('shared._pagination', ['paginator' => $overtimeApprovals, 'label' => 'lembur'])
 </div>
 </div>
 @endsection
